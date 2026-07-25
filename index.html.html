@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>タイムスタディ記録</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Meiryo',sans-serif;background:#f0efe9;color:#222;font-size:15px;-webkit-text-size-adjust:100%;}
+.app{max-width:480px;margin:0 auto;padding:10px;}
+h1{font-size:18px;font-weight:700;margin-bottom:10px;}
+.card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:12px 14px;margin-bottom:10px;}
+.row{display:flex;gap:8px;margin-bottom:8px;}
+.row:last-child{margin-bottom:0;}
+.lbl{font-size:11px;color:#666;display:block;margin-bottom:4px;font-weight:600;}
+.row select,.row input[type=text],.row input[type=date]{width:100%;font-size:14px;padding:9px 10px;border:1px solid #ccc;border-radius:8px;background:#fafaf8;color:#222;-webkit-appearance:none;}
+.f1{flex:1;}.f2{flex:2;}
+.snote{font-size:11px;color:#888;margin-top:6px;padding:5px 9px;background:#f7f6f2;border-radius:7px;border-left:3px solid #bbb;}
+/* シフトボタン */
+.shift-btns{display:flex;gap:5px;}
+.sbtn{flex:1;padding:9px 2px;font-size:12px;font-weight:700;border:1px solid #ccc;border-radius:8px;background:#f5f5f5;color:#888;cursor:pointer;text-align:center;-webkit-appearance:none;-webkit-tap-highlight-color:transparent;}
+.sbtn.on{background:#3a7bd5;color:#fff;border-color:#3a7bd5;}
+/* タブ */
+.tabs{display:flex;background:#ddd;border-radius:10px;padding:3px;margin-bottom:12px;gap:3px;}
+.tab{flex:1;padding:10px 0;font-size:14px;font-weight:700;color:#888;border-radius:8px;cursor:pointer;text-align:center;border:none;background:transparent;-webkit-appearance:none;-webkit-tap-highlight-color:transparent;}
+.tab.on{background:#fff;color:#222;box-shadow:0 1px 4px rgba(0,0,0,0.15);}
+.page{display:none;}.page.on{display:block;}
+/* 凡例 */
+.legend{display:flex;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;}
+.ldot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+.otleg{display:flex;align-items:center;gap:5px;font-size:11px;color:#8a5c00;margin-bottom:8px;}
+.otdot{width:11px;height:11px;border-radius:3px;background:#fff3d0;border:2px solid #d4a017;flex-shrink:0;}
+.notice{font-size:11px;color:#aaa;text-align:center;padding:2px 0 10px;}
+/* 時間帯ヘッダー */
+.hour-hd{font-size:11px;font-weight:700;color:#999;padding:6px 4px 2px;}
+.hour-hd.ot-hd{color:#c87800;}
+/* コマ行 */
+.it{background:#fff;border:1px solid #ddd;border-radius:12px;margin-bottom:6px;display:flex;align-items:flex-start;padding:8px 8px 8px 10px;}
+.it.ot{border-left:3px solid #d4a017;background:#fffdf5;}
+.it-tm{width:50px;min-width:50px;flex-shrink:0;font-size:13px;font-weight:700;color:#333;padding-top:5px;}
+.it-ot{font-size:9px;color:#8a5c00;font-weight:700;background:#fff3d0;padding:1px 4px;border-radius:4px;display:block;margin-top:2px;}
+.it-in{flex:1;min-width:0;}
+/* 区分ボタン ★buttonタグ使用 */
+.cat-row{display:flex;gap:5px;margin-bottom:5px;}
+.cat-btn{flex:1;padding:8px 2px;font-size:11px;font-weight:700;border:1px solid #ccc;border-radius:7px;background:#f5f5f5;color:#777;cursor:pointer;text-align:center;-webkit-appearance:none;-webkit-tap-highlight-color:transparent;}
+.cat-btn.on-a{background:#ddeeff;color:#1a5fa8;border-color:#5599ee;}
+.cat-btn.on-b{background:#e2f2d0;color:#2d6010;border-color:#5ea32e;}
+.cat-btn.on-c{background:#eeece6;color:#444;border-color:#aba89e;}
+/* 中分類 */
+.sub-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.sub-btn{padding:5px 10px;font-size:11px;border:1px solid #ccc;border-radius:20px;background:#f5f5f5;color:#666;cursor:pointer;-webkit-appearance:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+.sub-btn.on-a{background:#ddeeff;color:#1a5fa8;border-color:#5599ee;font-weight:700;}
+.sub-btn.on-b{background:#e2f2d0;color:#2d6010;border-color:#5ea32e;font-weight:700;}
+.sub-btn.on-c{background:#eeece6;color:#444;border-color:#aba89e;font-weight:700;}
+/* ボタン行 */
+.brow{display:flex;gap:8px;margin-top:12px;}
+.bblu{flex:1;padding:13px;font-size:14px;font-weight:700;border:none;border-radius:10px;background:#3a7bd5;color:#fff;cursor:pointer;-webkit-appearance:none;}
+.bwht{flex:1;padding:13px;font-size:14px;font-weight:700;border:1.5px solid #bbb;border-radius:10px;background:#fff;color:#444;cursor:pointer;-webkit-appearance:none;}
+.bgrn{flex:1;padding:13px;font-size:14px;font-weight:700;border:none;border-radius:10px;background:#2e7d32;color:#fff;cursor:pointer;-webkit-appearance:none;}
+/* 集計 */
+.sum-card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:14px;margin-bottom:10px;}
+.sum-ttl{font-size:14px;font-weight:700;margin-bottom:10px;padding-left:8px;border-left:4px solid #3a7bd5;}
+.sum-meta{font-size:12px;color:#888;margin-bottom:14px;}
+.bar-block{margin-bottom:14px;}
+.bar-hd{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:5px;}
+.bar-bg{width:100%;height:24px;background:#eee;border-radius:8px;overflow:hidden;}
+.bar-fg{height:100%;border-radius:8px;transition:width 0.4s ease;}
+.sub-list{padding-left:10px;margin-top:6px;}
+.sub-item{display:flex;justify-content:space-between;font-size:11px;color:#888;padding:2px 0;border-bottom:1px dashed #f0f0f0;}
+.sum-foot{margin-top:10px;padding-top:8px;border-top:1px solid #eee;font-size:12px;color:#bbb;}
+.footer{margin-top:12px;font-size:11px;color:#ccc;text-align:center;padding-bottom:12px;}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>🕐 タイムスタディ記録</h1>
+<div class="card">
+  <div class="row">
+    <div class="f2"><span class="lbl">職員名</span><input type="text" id="staffName" placeholder="例：田中 花子"></div>
+    <div class="f1"><span class="lbl">職種</span>
+      <select id="jobType"><option>介護職員</option><option>介護支援員</option></select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="f1"><span class="lbl">実施日</span><input type="date" id="studyDate"></div>
+    <div class="f1"><span class="lbl">シフト</span>
+      <div class="shift-btns">
+        <button type="button" class="sbtn on" onclick="switchShift(1)">早番</button>
+        <button type="button" class="sbtn" onclick="switchShift(2)">日勤</button>
+        <button type="button" class="sbtn" onclick="switchShift(3)">遅番</button>
+        <button type="button" class="sbtn" onclick="switchShift(4)">夜勤</button>
+      </div>
+    </div>
+  </div>
+  <div id="shiftNote" class="snote">早番：7:00〜16:00（表示範囲 6:00〜17:00）</div>
+</div>
+
+<div class="tabs">
+  <button type="button" class="tab on" id="tabRec" onclick="showTab('rec')">✏️ 記録</button>
+  <button type="button" class="tab" id="tabSum" onclick="showTab('sum')">📊 集計</button>
+</div>
+
+<div class="page on" id="pageRec">
+  <div class="legend">
+    <div class="leg"><div class="ldot" style="background:#5599ee;"></div>直接介護</div>
+    <div class="leg"><div class="ldot" style="background:#5ea32e;"></div>間接介護</div>
+    <div class="leg"><div class="ldot" style="background:#aba89e;"></div>非介護</div>
+  </div>
+  <div class="otleg"><div class="otdot"></div>残業・早出の時間帯（オレンジ背景）</div>
+  <p class="notice">区分をタップ → 中分類を選択して記録</p>
+  <div id="gridWrap"></div>
+  <div class="brow">
+    <button type="button" class="bblu" onclick="showTab('sum')">📊 集計を見る</button>
+    <button type="button" class="bwht" onclick="doCSV()">💾 CSV出力</button>
+  </div>
+</div>
+
+<div class="page" id="pageSum">
+  <div class="sum-card">
+    <div class="sum-ttl">集計結果</div>
+    <div class="sum-meta" id="sumMeta"></div>
+    <div class="bar-block">
+      <div class="bar-hd"><span style="color:#1a5fa8;">■ 直接介護</span><span id="vA">0%（0分）</span></div>
+      <div class="bar-bg"><div class="bar-fg" id="bA" style="background:#5599ee;width:0%;"></div></div>
+      <div class="sub-list" id="subA"></div>
+    </div>
+    <div class="bar-block">
+      <div class="bar-hd"><span style="color:#2d6010;">■ 間接介護</span><span id="vB">0%（0分）</span></div>
+      <div class="bar-bg"><div class="bar-fg" id="bB" style="background:#5ea32e;width:0%;"></div></div>
+      <div class="sub-list" id="subB"></div>
+    </div>
+    <div class="bar-block">
+      <div class="bar-hd"><span style="color:#555;">■ 非介護</span><span id="vC">0%（0分）</span></div>
+      <div class="bar-bg"><div class="bar-fg" id="bC" style="background:#aba89e;width:0%;"></div></div>
+      <div class="sub-list" id="subC"></div>
+    </div>
+    <div class="sum-foot" id="sumFoot"></div>
+  </div>
+  <div class="brow">
+    <button type="button" class="bblu" onclick="showTab('rec')">✏️ 記録に戻る</button>
+    <button type="button" class="bgrn" onclick="doCSV()">💾 CSV出力</button>
+  </div>
+</div>
+<p class="footer">タイムスタディ記録アプリ v2.0 ©道志会</p>
+</div>
+
+<script>
+var CATS={
+  a:{label:'直接介護',color:'#5599ee',subs:['食事介助','排泄介助','入浴介助','整容','レクリエーション実施','外出・外気浴','リハビリ','コール対応','傾聴','移動・移乗介助','バイタル測定']},
+  b:{label:'間接介護',color:'#5ea32e',subs:['食事準備・配膳・下膳','入浴準備・片づけ','排泄支援準備・片づけ','居室環境整備','レク準備','記録記入','記録確認']},
+  c:{label:'非介護',color:'#aba89e',subs:['リネン交換','衣類配布・整頓','ごみ捨て','物品補充','清掃','休憩（食事含む）','報告書など書類作成']}
+};
+var SHIFTS={
+  1:{label:'早番（7:00〜16:00）',  dispS:24,dispE:68, coreS:28,coreE:64, note:'早番：7:00〜16:00（表示範囲 6:00〜17:00）'},
+  2:{label:'日勤（9:00〜18:30）',  dispS:32,dispE:78, coreS:36,coreE:74, note:'日勤：9:00〜18:30（表示範囲 8:00〜19:30）'},
+  3:{label:'遅番（10:00〜19:00）', dispS:36,dispE:80, coreS:40,coreE:76, note:'遅番：10:00〜19:00（表示範囲 9:00〜20:00）'},
+  4:{label:'夜勤（17:00〜翌10:00）',dispS:64,dispE:140,coreS:68,coreE:136,note:'夜勤：17:00〜翌10:00（表示範囲 16:00〜翌11:00）'}
+};
+var curShift=1;
+var recData={};
+
+function pad(n){return n<10?'0'+n:''+n;}
+function slotToTime(s){var m=s*15,h=Math.floor(m/60),mn=m%60;return(h>=24?'翌':'')+pad(h%24)+':'+pad(mn);}
+function isOT(s){var c=SHIFTS[curShift];return s<c.coreS||s>=c.coreE;}
+
+function buildGrid(){
+  var cfg=SHIFTS[curShift];
+  var wrap=document.getElementById('gridWrap');
+  wrap.innerHTML='';
+  recData={};
+  var lastH=-1;
+  for(var s=cfg.dispS;s<cfg.dispE;s++){
+    recData[s]={cat:null,sub:null};
+    var h=Math.floor(s*15/60);
+    var ot=isOT(s);
+    if(h!==lastH){
+      lastH=h;
+      var hLabel=(h>=24?'翌'+pad(h-24):pad(h))+':00台';
+      var hdDiv=document.createElement('div');
+      hdDiv.className='hour-hd'+(ot?' ot-hd':'');
+      hdDiv.textContent=hLabel;
+      wrap.appendChild(hdDiv);
+    }
+    var row=document.createElement('div');
+    row.className='it'+(ot?' ot':'');
+    var tmDiv=document.createElement('div');
+    tmDiv.className='it-tm';
+    tmDiv.innerHTML=slotToTime(s)+(ot?'<span class="it-ot">残業</span>':'');
+    row.appendChild(tmDiv);
+    var inDiv=document.createElement('div');
+    inDiv.className='it-in';
+    // 区分ボタン（★buttonタグ）
+    var catRow=document.createElement('div');
+    catRow.className='cat-row';
+    var catKeys=['a','b','c'];
+    var catLabels=['直接介護','間接介護','非介護'];
+    for(var ki=0;ki<3;ki++){
+      (function(slot,k,kLabel){
+        var btn=document.createElement('button');
+        btn.type='button';
+        btn.className='cat-btn';
+        btn.id='cat_'+slot+'_'+k;
+        btn.textContent=kLabel;
+        btn.setAttribute('onclick','onCatClick('+slot+',"'+k+'")');
+        catRow.appendChild(btn);
+      })(s,catKeys[ki],catLabels[ki]);
+    }
+    inDiv.appendChild(catRow);
+    // 中分類（★buttonタグ）
+    for(var ki2=0;ki2<3;ki2++){
+      (function(slot,k){
+        var subRow=document.createElement('div');
+        subRow.className='sub-row';
+        subRow.id='sub_'+slot+'_'+k;
+        subRow.style.display='none';
+        var subs=CATS[k].subs;
+        for(var ji=0;ji<subs.length;ji++){
+          (function(sub){
+            var sbtn=document.createElement('button');
+            sbtn.type='button';
+            sbtn.className='sub-btn';
+            sbtn.textContent=sub;
+            sbtn.setAttribute('onclick','onSubClick('+slot+',"'+k+'","'+sub.replace(/"/g,'&quot;')+'")');
+            subRow.appendChild(sbtn);
+          })(subs[ji]);
+        }
+        inDiv.appendChild(subRow);
+      })(s,catKeys[ki2]);
+    }
+    row.appendChild(inDiv);
+    wrap.appendChild(row);
+  }
+}
+
+function onCatClick(slot,cat){
+  var r=recData[slot];
+  if(r.cat===cat){r.cat=null;r.sub=null;}
+  else{r.cat=cat;r.sub=null;}
+  renderSlot(slot);
+}
+
+function onSubClick(slot,cat,sub){
+  var r=recData[slot];
+  if(r.cat!==cat) return;
+  r.sub=(r.sub===sub)?null:sub;
+  renderSubBtns(slot,cat);
+}
+
+function renderSlot(slot){
+  var r=recData[slot];
+  var cats=['a','b','c'];
+  var onCls=['on-a','on-b','on-c'];
+  for(var i=0;i<3;i++){
+    var btn=document.getElementById('cat_'+slot+'_'+cats[i]);
+    if(btn) btn.className='cat-btn'+(r.cat===cats[i]?' '+onCls[i]:'');
+    var sr=document.getElementById('sub_'+slot+'_'+cats[i]);
+    if(sr) sr.style.display=(r.cat===cats[i])?'flex':'none';
+  }
+  if(r.cat) renderSubBtns(slot,r.cat);
+}
+
+function renderSubBtns(slot,cat){
+  var r=recData[slot];
+  var sr=document.getElementById('sub_'+slot+'_'+cat);
+  if(!sr) return;
+  var btns=sr.querySelectorAll('.sub-btn');
+  for(var i=0;i<btns.length;i++){
+    btns[i].className='sub-btn'+(r.sub===btns[i].textContent?' on-'+cat:'');
+  }
+}
+
+function switchShift(sfid){
+  curShift=sfid;
+  var btns=document.querySelectorAll('.sbtn');
+  for(var i=0;i<btns.length;i++){
+    var sf=parseInt(btns[i].getAttribute('onclick').replace(/[^0-9]/g,''));
+    btns[i].className='sbtn'+(sf===sfid?' on':'');
+  }
+  document.getElementById('shiftNote').textContent=SHIFTS[sfid].note;
+  buildGrid();
+}
+
+function showTab(id){
+  document.getElementById('pageRec').className='page'+(id==='rec'?' on':'');
+  document.getElementById('pageSum').className='page'+(id==='sum'?' on':'');
+  document.getElementById('tabRec').className='tab'+(id==='rec'?' on':'');
+  document.getElementById('tabSum').className='tab'+(id==='sum'?' on':'');
+  if(id==='sum') updateSummary();
+}
+
+function updateSummary(){
+  var totals={a:0,b:0,c:0};
+  var subCounts={a:{},b:{},c:{}};
+  var cats=['a','b','c'];
+  for(var ki=0;ki<3;ki++){var subs=CATS[cats[ki]].subs;for(var si=0;si<subs.length;si++) subCounts[cats[ki]][subs[si]]=0;}
+  var total=0,filled=0;
+  for(var s in recData){
+    total++;
+    var r=recData[s];
+    if(!r.cat) continue;
+    filled++;totals[r.cat]++;
+    if(r.sub&&subCounts[r.cat][r.sub]!==undefined) subCounts[r.cat][r.sub]++;
+  }
+  var pct=function(n,d){return d>0?Math.round(n/d*100):0;};
+  var pA=pct(totals.a,total),pB=pct(totals.b,total),pC=pct(totals.c,total);
+  var nm=document.getElementById('staffName').value||'未入力';
+  var jb=document.getElementById('jobType').value;
+  var dt=document.getElementById('studyDate').value||'未設定';
+  document.getElementById('sumMeta').textContent=dt+'　'+nm+'（'+jb+'）　'+SHIFTS[curShift].label;
+  document.getElementById('vA').textContent=pA+'%（'+(totals.a*15)+'分）';
+  document.getElementById('vB').textContent=pB+'%（'+(totals.b*15)+'分）';
+  document.getElementById('vC').textContent=pC+'%（'+(totals.c*15)+'分）';
+  document.getElementById('bA').style.width=pA+'%';
+  document.getElementById('bB').style.width=pB+'%';
+  document.getElementById('bC').style.width=pC+'%';
+  function makeSubHtml(cat){
+    var h='';var subs=CATS[cat].subs;
+    for(var i=0;i<subs.length;i++){var cnt=subCounts[cat][subs[i]];if(cnt>0) h+='<div class="sub-item"><span>'+subs[i]+'</span><span>'+(cnt*15)+'分</span></div>';}
+    return h;
+  }
+  document.getElementById('subA').innerHTML=makeSubHtml('a');
+  document.getElementById('subB').innerHTML=makeSubHtml('b');
+  document.getElementById('subC').innerHTML=makeSubHtml('c');
+  var blank=total-filled;
+  document.getElementById('sumFoot').textContent=(blank>0?'⚠️ 未入力：'+blank+'コマ（'+(blank*15)+'分）　':'')+'記録済：'+filled+'/'+total+'コマ';
+}
+
+function doCSV(){
+  var nm=document.getElementById('staffName').value||'未入力';
+  var jb=document.getElementById('jobType').value;
+  var dt=document.getElementById('studyDate').value||'未設定';
+  var sl=SHIFTS[curShift].label;
+  var cfg=SHIFTS[curShift];
+  var rows=[['実施日','職員名','職種','シフト','時刻','直接/間接/非介護','業務内容（中分類）','残業・早出']];
+  for(var s=cfg.dispS;s<cfg.dispE;s++){
+    var r=recData[s]||{cat:null,sub:null};
+    var ot=(s<cfg.coreS||s>=cfg.coreE)?'残業・早出':'通常';
+    rows.push([dt,nm,jb,sl,slotToTime(s),r.cat?CATS[r.cat].label:'',r.sub||'',ot]);
+  }
+  var csv='\uFEFF';
+  for(var ri=0;ri<rows.length;ri++){var cols=[];for(var ci=0;ci<rows[ri].length;ci++) cols.push('"'+String(rows[ri][ci]).replace(/"/g,'""')+'"');csv+=cols.join(',')+'\r\n';}
+  try{
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;
+    a.download='タイムスタディ_'+dt.replace(/-/g,'')+'_'+nm+'.csv';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  }catch(e){alert('CSV出力エラー：'+e.message);}
+}
+
+var td=new Date(),mm=td.getMonth()+1,dd=td.getDate();
+document.getElementById('studyDate').value=td.getFullYear()+'-'+(mm<10?'0'+mm:mm)+'-'+(dd<10?'0'+dd:dd);
+buildGrid();
+</script>
+</body>
+</html>
