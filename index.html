@@ -15,7 +15,7 @@
 .role-note{font-size:11px;color:#777;padding:8px;background:#f7f7f4;border-radius:8px}
 .draft-select{width:100%;font-size:13px;padding:9px;border:1px solid #bbb;border-radius:8px;background:#f8fbff}
 .new-btn{padding:9px 12px;border:0;border-radius:8px;background:#2e7d32;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
-.overtime-row{display:flex;gap:6px;margin:0 0 7px}.overtime-btn{flex:1;padding:8px 5px;border:1px solid #8aa7c7;border-radius:8px;background:#f2f7fc;color:#285a8d;font-size:11px;font-weight:700}.overtime-btn:disabled{opacity:.45}
+.it.overtime-slot{border-color:#e4a94c;background:#fffaf0}.overtime-tag{display:block;margin-top:3px;color:#a35b00;font-size:9px;font-weight:700}
 </style>
 </head>
 <body>
@@ -26,18 +26,17 @@
   <div class="row"><div class="f2"><span class="lbl">保存データを切り替える</span><select id="draftSelect" class="draft-select"></select></div><div><span class="lbl">別の職員</span><button id="btnNewDraft" class="new-btn" type="button">＋ 新規入力</button></div></div>
   <div class="row"><div class="f2"><span class="lbl">職員イニシャル・匿名記号</span><input type="text" id="staffName" placeholder="例：A職員、K.A"></div><div class="f1"><span class="lbl">職種</span><select id="jobType"><option>介護職員</option><option>介護支援員</option><option>その他</option></select></div></div>
   <div class="row"><div class="f1"><span class="lbl">実施日</span><input type="date" id="studyDate"></div><div class="f2"><span class="lbl">勤務形態</span><div class="shift-btns" id="shiftBtns"><div class="sbtn on" data-sf="early">早番</div><div class="sbtn" data-sf="day">日勤</div><div class="sbtn" data-sf="late">遅番</div><div class="sbtn" data-sf="night">夜勤</div><div class="sbtn" data-sf="custom">時間勤務</div></div></div></div>
-  <div class="row"><div class="f1"><span class="lbl">実際の勤務開始</span><input type="time" id="workStart" step="600"></div><div class="f1"><span class="lbl">実際の勤務終了</span><input type="time" id="workEnd" step="600"></div></div>
-  <div class="overtime-row" id="overtimeControls"><button type="button" class="overtime-btn" id="btnStartEarly">開始を1時間前</button><button type="button" class="overtime-btn" id="btnTimeReset">基本時間に戻す</button><button type="button" class="overtime-btn" id="btnEndLate">終了を1時間後</button></div>
-  <div id="shiftNote" class="snote">早番の初期値です。パート勤務・早出・残業は実際の時刻へ直してください。</div>
-  <div class="snote warn">表示されるのは勤務開始から終了までだけです。表示されない時間は「勤務外」であり、入力漏れとして扱いません。</div>
+  <div class="row"><div class="f1"><span class="lbl">基本勤務開始</span><input type="time" id="workStart" step="600"></div><div class="f1"><span class="lbl">基本勤務終了</span><input type="time" id="workEnd" step="600"></div></div>
+  <div id="shiftNote" class="snote">基本勤務の前後1時間も自動表示します。前後枠は実際に業務をした場合だけ入力してください。</div>
+  <div class="snote warn">基本勤務内は入力必須です。前後1時間の「残業・任意」枠は、業務を行った場合だけ入力し、空欄は勤務していない時間として扱います。</div>
   <div class="snote">複数職員を入力する場合は、職員ごとに「＋ 新規入力」を押してください。Safariのタブを閉じても、同じ端末・通常モードなら上の一覧から復元できます。</div>
   <div class="draft-row"><span id="saveStatus" class="save-status">職員ごとにこの端末へ自動保存されます</span><button id="btnClear" class="clear-btn" type="button">この職員データを削除</button></div>
 </div>
 <div class="tabs"><div class="tab on" data-tab="rec">✏️ 記録</div><div class="tab" data-tab="sum">📊 個人集計</div><div class="tab" data-tab="all">📈 全体分析</div></div>
 <div class="page on" id="pageRec"><div class="legend"><div class="leg"><span class="dot" style="background:#5599ee"></span>直接介護</div><div class="leg"><span class="dot" style="background:#6aa83b"></span>間接介護</div><div class="leg"><span class="dot" style="background:#a9a39a"></span>その他業務</div><div class="leg"><span class="dot" style="background:#d89235"></span>休憩</div></div><p class="notice">10分間で最も時間を使った「主業務」を1つ選択します。同時進行や途中の対応は「並行・割込業務」へ追加します。</p><div id="gridWrap"></div><div class="brow"><button class="btn blue" id="btnGoSum">📊 個人集計を見る</button><button class="btn white" id="btnCSV1">💾 CSV出力</button></div></div>
-<div class="page" id="pageSum"><div class="sum-card"><div class="sum-title">個人集計</div><div id="sumMeta" class="sum-foot"></div><div class="metric-grid"><div class="metric"><b id="directRate">0%</b><span>実質直接介護率</span></div><div class="metric"><b id="workMinutes">0分</b><span>休憩を除いた実働</span></div><div class="metric"><b id="recordMinutes">0分</b><span>記録業務</span></div><div class="metric"><b id="interruptCount">0枠</b><span>並行・割込があった時間枠</span></div></div><div id="bars"></div><div id="subList"></div><div id="sumFoot" class="sum-foot"></div></div><div class="brow"><button class="btn blue" id="btnGoRec">✏️ 記録へ戻る</button><button class="btn green" id="btnCSV2">💾 CSV出力</button></div></div>
+<div class="page" id="pageSum"><div class="sum-card"><div class="sum-title">個人集計</div><div id="sumMeta" class="sum-foot"></div><div class="metric-grid"><div class="metric"><b id="directRate">0%</b><span>実質直接介護率</span></div><div class="metric"><b id="workMinutes">0分</b><span>休憩を除いた実働</span></div><div class="metric"><b id="recordMinutes">0分</b><span>記録業務</span></div><div class="metric"><b id="overtimeMinutes">0分</b><span>残業実働</span></div><div class="metric"><b id="interruptCount">0枠</b><span>並行・割込があった時間枠</span></div></div><div id="bars"></div><div id="subList"></div><div id="sumFoot" class="sum-foot"></div></div><div class="brow"><button class="btn blue" id="btnGoRec">✏️ 記録へ戻る</button><button class="btn green" id="btnCSV2">💾 CSV出力</button></div></div>
 <div class="page" id="pageAll"><div class="sum-card"><div class="sum-title">複数職員の全体分析</div><p class="notice">端末に保存した職員データを直接集計できます。CSVの一括出力や、出力済みCSVの読込みにも対応しています。</p><div class="brow"><button class="btn blue" id="btnAnalyzeSaved">📊 保存データを集計</button><button class="btn green" id="btnCSVAll">💾 全職員CSV</button></div><input class="upload" type="file" id="csvFiles" accept=".csv,text/csv" multiple><div id="allResult"><div class="sum-foot">「保存データを集計」またはCSVファイルを選択してください。</div></div></div></div>
-<p class="footer">タイムスタディ記録・分析アプリ v3.6（時間外入力対応）</p>
+<p class="footer">タイムスタディ記録・分析アプリ v3.7（残業枠・集計対応）</p>
 </div>
 <script>
 const SLOT_MIN=10;
@@ -45,37 +44,41 @@ const CATS={a:{label:'直接介護',color:'#5599ee',subs:['食事介助','水分
 const INTERRUPTS=['ナースコール対応','電話対応','食事記録（紙）','水分記録（紙）','入浴記録（紙）','職員からの相談','利用者からの依頼','家族対応','緊急対応','物品を取りに行く','他職員の応援','その他'];
 const PARALLEL_GROUPS={a:{label:'直接介護',subs:CATS.a.subs},b:{label:'間接介護',subs:CATS.b.subs},c:{label:'その他業務',subs:CATS.c.subs},x:{label:'対応・連絡',subs:INTERRUPTS}};
 const SHIFTS={early:{label:'早番',start:'07:00',end:'16:00'},day:{label:'日勤',start:'09:30',end:'18:30'},late:{label:'遅番',start:'10:00',end:'19:00'},night:{label:'夜勤',start:'17:00',end:'10:00'},custom:{label:'時間勤務',start:'09:00',end:'15:00'}};
-const CSV_HEADER=['実施日','職員記号','職種','勤務形態','勤務開始','勤務終了','時刻','記録単位（分）','大分類','主業務','主業務詳細','割込対応','割込詳細','割込対応数'];
+const CSV_HEADER=['実施日','職員記号','職種','勤務形態','勤務開始','勤務終了','時刻','記録単位（分）','大分類','主業務','主業務詳細','割込対応','割込詳細','割込対応数','勤務区分','残業区分','基本勤務開始','基本勤務終了'];
 const STORE_KEY='timestudy-v3-4-drafts',LEGACY_KEY='timestudy-v3-3-draft';
 let curShift='early',recData={},lastSchedule=null,activeDraftId=null;
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 function toMin(t){if(!/^\d{2}:\d{2}$/.test(t||''))return NaN;const [h,m]=t.split(':').map(Number);return h*60+m}
-function timeLabel(min){const next=min>=1440,n=((min%1440)+1440)%1440;return(next?'翌':'')+String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
-function clockValue(min){const n=((min%1440)+1440)%1440;return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
+function timeLabel(min){const prefix=min<0?'前日':min>=1440?'翌':'',n=((min%1440)+1440)%1440;return prefix+String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
 
-function getRange(){let s=toMin($('workStart').value),e=toMin($('workEnd').value);if(!Number.isFinite(s)||!Number.isFinite(e))return null;if(e<=s)e+=1440;return{s,e}}
+function rangeFromTimes(start,end){let s=toMin(start),e=toMin(end);if(!Number.isFinite(s)||!Number.isFinite(e))return null;if(e<=s)e+=1440;return{s,e}}
+
+function getRange(){return rangeFromTimes($('workStart').value,$('workEnd').value)}
+
+function displayRange(base=getRange()){return base?{s:base.s-60,e:base.e+60}:null}
 
 function scheduleSnapshot(){return{shift:curShift,start:$('workStart').value,end:$('workEnd').value}}
 
-function baseRange(id=curShift){if(id==='custom'||!SHIFTS[id])return null;let s=toMin(SHIFTS[id].start),e=toMin(SHIFTS[id].end);if(e<=s)e+=1440;return{s,e}}
+function timeDivision(min,start=$('workStart').value,end=$('workEnd').value){const base=rangeFromTimes(start,end);if(!base)return{workClass:'通常勤務',overtimeKind:''};if(min<base.s)return{workClass:'残業',overtimeKind:'開始前'};if(min>=base.e)return{workClass:'残業',overtimeKind:'終了後'};return{workClass:'通常勤務',overtimeKind:''}}
 
-function hasEntries(){return Object.values(recData).some(r=>r.cat||r.sub||(r.interrupts&&r.interrupts.length)||r.detail||r.interruptDetail)}
+function minuteFromLabel(label){const text=String(label||''),next=text.startsWith('翌'),previous=text.startsWith('前日'),raw=text.replace(/^(翌|前日)/,'');const n=toMin(raw);return Number.isFinite(n)?n+(next?1440:previous?-1440:0):NaN}
+
+function rowHasInput(r={}){return!!(r.cat||r.sub||(r.interrupts&&r.interrupts.length)||r.detail||r.interruptDetail)}
+
+function hasEntries(){return Object.values(recData).some(rowHasInput)}
 
 function validateSchedule(showMessage=true){
   const range=getRange(),start=toMin($('workStart').value),end=toMin($('workEnd').value);
   let message='';
   if(!range)message='勤務開始と終了を入力してください。';
   else if(start%SLOT_MIN!==0||end%SLOT_MIN!==0)message='勤務開始と終了は10分単位で設定してください。';
-  else if(range.e-range.s<=0||range.e-range.s>1440)message='勤務時間は24時間以内で設定してください。';
-  else if(baseRange()&&(range.s<baseRange().s-60||range.e>baseRange().e+60))message=SHIFTS[curShift].label+'は、基本勤務時間の開始1時間前から終了1時間後まで入力できます。';
+  else if(range.e-range.s<=0||range.e-range.s>1320)message='基本勤務時間は22時間以内で設定してください。';
   if(message&&showMessage)alert(message);
   return !message;
 }
 
 function showSaveStatus(message){$('saveStatus').textContent=message;}
-
-function updateOvertimeControls(){const disabled=curShift==='custom';document.querySelectorAll('.overtime-btn').forEach(b=>b.disabled=disabled);$('overtimeControls').style.display=disabled?'none':'flex'}
 
 function emptyStore(){return{drafts:{},lastId:null}}
 
@@ -113,7 +116,7 @@ function loadDraftById(id){
     $('staffName').value=d.staff||'';$('jobType').value=d.job||'介護職員';$('studyDate').value=d.date||$('studyDate').value;
     curShift=SHIFTS[d.shift]?d.shift:'custom';$('workStart').value=d.start;$('workEnd').value=d.end;recData=d.recData||{};
     document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf===curShift));
-    $('shiftNote').textContent='保存済みの職員データをこの端末から復元しました。';lastSchedule=scheduleSnapshot();updateOvertimeControls();buildGrid(true);updateDraftUrl();refreshDraftSelect();showSaveStatus('保存データを復元しました');return true;
+    $('shiftNote').textContent='保存済みの基本勤務時間と記録を復元しました。前後1時間枠は任意入力です。';lastSchedule=scheduleSnapshot();buildGrid(true);updateDraftUrl();refreshDraftSelect();showSaveStatus('保存データを復元しました');return true;
   }catch(e){return false;}
 }
 
@@ -126,7 +129,7 @@ function loadDraft(){
 function createNewDraft(){
   if(activeDraftId)saveDraft();activeDraftId=newDraftId();recData={};$('staffName').value='';$('jobType').value='介護職員';
   const now=new Date();$('studyDate').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-  curShift='early';$('workStart').value=SHIFTS.early.start;$('workEnd').value=SHIFTS.early.end;document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf==='early'));$('shiftNote').textContent='新しい職員の入力を開始しました。';lastSchedule=scheduleSnapshot();updateOvertimeControls();buildGrid(false);saveDraft();showSaveStatus('新しい職員データを作成しました');
+  curShift='early';$('workStart').value=SHIFTS.early.start;$('workEnd').value=SHIFTS.early.end;document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf==='early'));$('shiftNote').textContent='基本勤務の前後1時間も表示しています。前後枠は任意入力です。';lastSchedule=scheduleSnapshot();buildGrid(false);saveDraft();showSaveStatus('新しい職員データを作成しました');
 }
 
 function switchDraft(id){if(id===activeDraftId)return;saveDraft();loadDraftById(id)}
@@ -140,30 +143,22 @@ function clearDraft(){
 function setShift(id,{force=false}={}){
   if(!force&&id===curShift&&$('workStart').value===SHIFTS[id].start&&$('workEnd').value===SHIFTS[id].end)return;
   if(!force&&hasEntries()&&!confirm('勤務形態を変更すると、現在の入力内容を消去します。変更しますか？'))return;
-  recData={};curShift=id;document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf===id));$('workStart').value=SHIFTS[id].start;$('workEnd').value=SHIFTS[id].end;$('shiftNote').textContent=SHIFTS[id].label+'の基本時間です。時間外は前後1時間まで10分単位で入力できます。';lastSchedule=scheduleSnapshot();updateOvertimeControls();buildGrid(false);saveDraft();
+  recData={};curShift=id;document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf===id));$('workStart').value=SHIFTS[id].start;$('workEnd').value=SHIFTS[id].end;$('shiftNote').textContent=SHIFTS[id].label+'の基本時間です。前後1時間枠は残業があった場合だけ入力してください。';lastSchedule=scheduleSnapshot();buildGrid(false);saveDraft();
 }
 
 function handleTimeChange(){
   const previous=lastSchedule;
   if(!validateSchedule(true)){if(previous){$('workStart').value=previous.start;$('workEnd').value=previous.end}return}
-  const next=getRange(),removesEntered=Object.entries(recData).some(([key,r])=>(Number(key)<next.s||Number(key)>=next.e)&&(r.cat||r.sub||(r.interrupts&&r.interrupts.length)||r.detail||r.interruptDetail));
+  const next=displayRange(),removesEntered=Object.entries(recData).some(([key,r])=>(Number(key)<next.s||Number(key)>=next.e)&&(r.cat||r.sub||(r.interrupts&&r.interrupts.length)||r.detail||r.interruptDetail));
   if(removesEntered&&!confirm('短縮する時間帯に入力済みの記録があります。その時間帯を除外しますか？')){if(previous){$('workStart').value=previous.start;$('workEnd').value=previous.end}return}
-  $('shiftNote').textContent=(curShift==='custom'?'時間勤務':SHIFTS[curShift].label)+'の実際の勤務時間 '+$('workStart').value+'〜'+$('workEnd').value+' を使用しています。';lastSchedule=scheduleSnapshot();buildGrid(true);saveDraft();
-}
-
-function applyTimePreset(mode){
-  const base=baseRange();if(!base)return;
-  if(mode==='early')$('workStart').value=clockValue(base.s-60);
-  if(mode==='late')$('workEnd').value=clockValue(base.e+60);
-  if(mode==='reset'){$('workStart').value=SHIFTS[curShift].start;$('workEnd').value=SHIFTS[curShift].end}
-  handleTimeChange();
+  $('shiftNote').textContent='基本勤務 '+$('workStart').value+'〜'+$('workEnd').value+' の前後1時間枠を表示しています。';lastSchedule=scheduleSnapshot();buildGrid(true);saveDraft();
 }
 
 function buildGrid(preserve=true){
-  const old=preserve?recData:{};recData={};const range=getRange(),wrap=$('gridWrap');wrap.innerHTML='';
+  const old=preserve?recData:{};recData={};const base=getRange(),range=displayRange(base),wrap=$('gridWrap');wrap.innerHTML='';
   if(!range||!validateSchedule(false)){wrap.innerHTML='<p class="notice warn">勤務時間を10分単位で設定してください。</p>';return}
   const{s,e}=range;let lastHour=-1;
-  for(let m=s;m<e;m+=SLOT_MIN){const key=String(m),saved=old[key]||{},savedInts=Array.isArray(saved.interrupts)?saved.interrupts.filter(x=>x!==saved.sub):[];recData[key]={cat:saved.cat||null,sub:saved.sub||null,detail:saved.detail||'',interrupts:savedInts,interruptDetail:saved.interruptDetail||'',parallelCat:PARALLEL_GROUPS[saved.parallelCat]?saved.parallelCat:'a'};const hour=Math.floor(m/60);if(hour!==lastHour){lastHour=hour;const hd=document.createElement('div');hd.className='hour-hd';hd.textContent=timeLabel(hour*60)+'台';wrap.appendChild(hd)}const row=document.createElement('div');row.className='it';row.id='row_'+key;row.innerHTML='<div class="it-tm">'+timeLabel(m)+'</div><div class="it-in"><div class="cat-row" id="cats_'+key+'"></div><div id="detail_'+key+'"></div></div>';wrap.appendChild(row);renderSlot(key)}
+  for(let m=s;m<e;m+=SLOT_MIN){const key=String(m),saved=old[key]||{},savedInts=Array.isArray(saved.interrupts)?saved.interrupts.filter(x=>x!==saved.sub):[];recData[key]={cat:saved.cat||null,sub:saved.sub||null,detail:saved.detail||'',interrupts:savedInts,interruptDetail:saved.interruptDetail||'',parallelCat:PARALLEL_GROUPS[saved.parallelCat]?saved.parallelCat:'a'};const hour=Math.floor(m/60),division=timeDivision(m);if(hour!==lastHour){lastHour=hour;const hd=document.createElement('div');hd.className='hour-hd';hd.textContent=timeLabel(hour*60)+'台';wrap.appendChild(hd)}const row=document.createElement('div');row.className='it'+(division.workClass==='残業'?' overtime-slot':'');row.id='row_'+key;row.innerHTML='<div class="it-tm">'+timeLabel(m)+(division.workClass==='残業'?'<span class="overtime-tag">残業・任意</span>':'')+'</div><div class="it-in"><div class="cat-row" id="cats_'+key+'"></div><div id="detail_'+key+'"></div></div>';wrap.appendChild(row);renderSlot(key)}
 }
 
 function taskLabel(r){return(r.sub||'')+(r.detail?'（'+r.detail+'）':'')}
@@ -189,12 +184,14 @@ function renderSlot(key){
 }
 
 function getStats(){
-  const totals={a:0,b:0,c:0,d:0},subs={},ints={},intDetails=[];
-  let pending=0;
+  const totals={a:0,b:0,c:0,d:0},subs={},ints={},intDetails=[],overtimeSubs={};
+  let pending=0,overtime=0;
   Object.entries(recData).forEach(([key,r])=>{
+    const division=timeDivision(Number(key));if(division.workClass==='残業'&&!rowHasInput(r))return;
     if(!r.cat||!r.sub||(r.sub.includes('その他')&&!r.detail.trim())||(r.interrupts.some(x=>x.includes('その他'))&&!r.interruptDetail.trim())){pending++;return}
     totals[r.cat]+=SLOT_MIN;
     const task=taskLabel(r);subs[task]=(subs[task]||0)+SLOT_MIN;
+    if(r.cat!=='d'&&division.workClass==='残業'){overtime+=SLOT_MIN;const overtimeTask=division.overtimeKind+'：'+task;overtimeSubs[overtimeTask]=(overtimeSubs[overtimeTask]||0)+SLOT_MIN}
     r.interrupts.forEach(x=>{
       const interrupt=x.includes('その他')&&r.interruptDetail?x+'（'+r.interruptDetail+'）':x;
       ints[interrupt]=(ints[interrupt]||0)+1;
@@ -204,7 +201,7 @@ function getStats(){
   const work=totals.a+totals.b+totals.c;
   const records=Object.entries(subs).filter(([k])=>k.includes('記録')).reduce((a,[,v])=>a+v,0);
   const intSlots=new Set(intDetails.map(x=>x.time)).size;
-  return{totals,subs,ints,intDetails,intSlots,pending,work,records};
+  return{totals,subs,ints,intDetails,intSlots,pending,work,records,overtime,overtimeSubs};
 }
 
 function updateSummary(){
@@ -213,28 +210,32 @@ function updateSummary(){
   $('directRate').textContent=rate.toFixed(1)+'%';
   $('workMinutes').textContent=st.work+'分';
   $('recordMinutes').textContent=st.records+'分';
+  $('overtimeMinutes').textContent=st.overtime+'分';
   $('interruptCount').textContent=st.intSlots+'枠';
   $('bars').innerHTML=['a','b','c'].map(k=>{const p=st.work?st.totals[k]/st.work*100:0;return'<div class="bar-block"><div class="bar-hd"><span>'+CATS[k].label+'</span><span>'+p.toFixed(1)+'%（'+st.totals[k]+'分）</span></div><div class="bar-bg"><div class="bar-fg" style="width:'+p+'%;background:'+CATS[k].color+'"></div></div></div>'}).join('');
   const tasks=Object.entries(st.subs).sort((a,b)=>b[1]-a[1]);
+  const overtimeTasks=Object.entries(st.overtimeSubs).sort((a,b)=>b[1]-a[1]);
+  const overtimeHtml=overtimeTasks.length?'<div class="sum-title" style="margin-top:12px">残業中の業務</div>'+overtimeTasks.map(([k,v])=>'<div class="sub-item"><span>'+esc(k)+'</span><span>'+v+'分</span></div>').join(''):'<div class="sum-title" style="margin-top:12px">残業中の業務</div><div class="role-note">残業実働はありません。</div>';
   const interruptHtml=st.intDetails.length?'<div class="sum-title" style="margin-top:12px">時間帯別の並行・割込業務</div>'+st.intDetails.map(x=>'<div class="sub-item"><span>'+esc(x.time)+'　'+esc(x.interrupt)+'</span><span>主：'+esc(x.task)+'</span></div>').join(''):'';
-  $('subList').innerHTML='<div class="sum-title">業務別時間</div>'+tasks.map(([k,v])=>'<div class="sub-item"><span>'+esc(k)+'</span><span>'+v+'分</span></div>').join('')+interruptHtml;
-  $('sumFoot').textContent='休憩 '+st.totals.d+'分（割合の分母から除外）／並行・割込業務は発生時刻を示し、主業務の時間へ重ねて加算しません。'+(st.pending?'／入力待ち '+st.pending+'コマ：CSV出力前に主業務を確定してください。':'／全時間の入力が完了しています。');
+  $('subList').innerHTML='<div class="sum-title">業務別時間</div>'+tasks.map(([k,v])=>'<div class="sub-item"><span>'+esc(k)+'</span><span>'+v+'分</span></div>').join('')+overtimeHtml+interruptHtml;
+  $('sumFoot').textContent='休憩 '+st.totals.d+'分（割合の分母から除外）／基本勤務の前後1時間は任意入力で、業務を入力した枠だけ残業実働に含めます。'+(st.pending?'／入力待ち '+st.pending+'コマ：CSV出力前に主業務を確定してください。':'／基本勤務時間の入力が完了しています。');
 }
 
-function draftRange(d){let s=toMin(d.start),e=toMin(d.end);if(!Number.isFinite(s)||!Number.isFinite(e))return null;if(e<=s)e+=1440;return{s,e}}
+function draftRange(d){return rangeFromTimes(d.start,d.end)}
 
 function rowsForDraft(d,withHeader=true){
-  const range=draftRange(d),rows=withHeader?[CSV_HEADER.slice()]:[];if(!range)return rows;
-  for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{};rows.push([d.date||'',d.staff||'',d.job||'',SHIFTS[d.shift]?.label||'時間勤務',d.start||'',d.end||'',timeLabel(m),SLOT_MIN,r.cat&&CATS[r.cat]?CATS[r.cat].label:'',r.sub||'',r.detail||'',(r.interrupts||[]).join('|'),r.interruptDetail||'',(r.interrupts||[]).length])}
+  const base=draftRange(d),range=displayRange(base),rows=withHeader?[CSV_HEADER.slice()]:[];if(!range)return rows;
+  for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{},division=timeDivision(m,d.start,d.end);rows.push([d.date||'',d.staff||'',d.job||'',SHIFTS[d.shift]?.label||'時間勤務',d.start||'',d.end||'',timeLabel(m),SLOT_MIN,r.cat&&CATS[r.cat]?CATS[r.cat].label:'',r.sub||'',r.detail||'',(r.interrupts||[]).join('|'),r.interruptDetail||'',(r.interrupts||[]).length,division.workClass,division.overtimeKind,d.start||'',d.end||''])}
   return rows;
 }
 
 function rowsForCSV(){return rowsForDraft(currentDraft())}
 
 function draftIssue(d){
-  const range=draftRange(d),start=toMin(d.start),end=toMin(d.end);if(!range||start%SLOT_MIN!==0||end%SLOT_MIN!==0)return'勤務時間が10分単位ではありません';
+  const base=draftRange(d),range=displayRange(base),start=toMin(d.start),end=toMin(d.end);if(!range||start%SLOT_MIN!==0||end%SLOT_MIN!==0)return'勤務時間が10分単位ではありません';
+  if(base.e-base.s>1320)return'基本勤務時間が22時間を超えています';
   if(!(d.staff||'').trim())return'職員記号が未設定です';
-  let pending=0;for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{};if(!r.cat||!r.sub||(r.sub.includes('その他')&&!(r.detail||'').trim())||((r.interrupts||[]).some(x=>x.includes('その他'))&&!(r.interruptDetail||'').trim()))pending++}
+  let pending=0;for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{},required=m>=base.s&&m<base.e;if(!required&&!rowHasInput(r))continue;if(!r.cat||!r.sub||(r.sub.includes('その他')&&!(r.detail||'').trim())||((r.interrupts||[]).some(x=>x.includes('その他'))&&!(r.interruptDetail||'').trim()))pending++}
   return pending?'未確定が'+pending+'コマあります':'';
 }
 
@@ -244,7 +245,7 @@ function csvText(rows){return '\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v??''
 
 function downloadCSV(rows,filename){const blob=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
 
-function doCSV(){if(!validateSchedule(true))return;const st=getStats();if(!$('staffName').value.trim()){alert('職員イニシャルまたは匿名記号を入力してください。');return}if(st.pending){alert('主業務または「その他」の詳細が確定していない時間が '+st.pending+' コマあります。全時間を入力してから出力してください。');return}saveDraft();downloadCSV(rowsForCSV(),'タイムスタディ_'+$('studyDate').value.replace(/-/g,'')+'_'+$('staffName').value+'.csv')}
+function doCSV(){if(!validateSchedule(true))return;const st=getStats();if(!$('staffName').value.trim()){alert('職員イニシャルまたは匿名記号を入力してください。');return}if(st.pending){alert('基本勤務内、または入力を開始した残業枠に、未確定の時間が '+st.pending+' コマあります。主業務と必要な詳細を確定してください。');return}saveDraft();downloadCSV(rowsForCSV(),'タイムスタディ_'+$('studyDate').value.replace(/-/g,'')+'_'+$('staffName').value+'.csv')}
 
 function checkedSavedDrafts(){
   saveDraft();const drafts=meaningfulDrafts();if(!drafts.length){alert('集計できる保存データがありません。');return null}
@@ -260,7 +261,7 @@ function parseCSV(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<t
 
 function rowsToAnalysisData(rows){
   if(!rows.length)return[];const h=rows[0],idx=n=>h.indexOf(n);if(idx('主業務')<0)return[];
-  return rows.slice(1).map(r=>{const detail=idx('主業務詳細')>=0?r[idx('主業務詳細')]||'':'';const intDetail=idx('割込詳細')>=0?r[idx('割込詳細')]||'':'';const rawInts=(r[idx('割込対応')]||'').split('|').filter(Boolean);return{date:r[idx('実施日')],staff:r[idx('職員記号')],job:r[idx('職種')],time:r[idx('時刻')],min:Number(r[idx('記録単位（分）')])||10,cat:r[idx('大分類')],task:(r[idx('主業務')]||'')+(detail?'（'+detail+'）':''),ints:rawInts.map(x=>x.includes('その他')&&intDetail?x+'（'+intDetail+'）':x)}})
+  return rows.slice(1).map(r=>{const detail=idx('主業務詳細')>=0?r[idx('主業務詳細')]||'':'';const intDetail=idx('割込詳細')>=0?r[idx('割込詳細')]||'':'';const rawInts=(r[idx('割込対応')]||'').split('|').filter(Boolean),start=idx('基本勤務開始')>=0?r[idx('基本勤務開始')]||r[idx('勤務開始')]:r[idx('勤務開始')],end=idx('基本勤務終了')>=0?r[idx('基本勤務終了')]||r[idx('勤務終了')]:r[idx('勤務終了')],inferred=timeDivision(minuteFromLabel(r[idx('時刻')]),start,end),rawClass=idx('勤務区分')>=0?r[idx('勤務区分')]||inferred.workClass:inferred.workClass,workClass=rawClass==='時間外'?'残業':rawClass,kindIndex=idx('残業区分')>=0?idx('残業区分'):idx('時間外区分'),overtimeKind=kindIndex>=0?r[kindIndex]||inferred.overtimeKind:inferred.overtimeKind;return{date:r[idx('実施日')],staff:r[idx('職員記号')],job:r[idx('職種')],time:r[idx('時刻')],min:Number(r[idx('記録単位（分）')])||10,cat:r[idx('大分類')],task:(r[idx('主業務')]||'')+(detail?'（'+detail+'）':''),ints:rawInts.map(x=>x.includes('その他')&&intDetail?x+'（'+intDetail+'）':x),workClass,overtimeKind}})
 }
 
 async function analyzeFiles(files){let data=[];for(const f of files)data.push(...rowsToAnalysisData(parseCSV((await f.text()).replace(/^\uFEFF/,''))));renderAll(data)}
@@ -282,18 +283,19 @@ function renderAll(data){
   if(!data.length){$('allResult').innerHTML='<p class="notice warn">読み込める新形式のデータがありません。</p>';return}
   const work=data.filter(x=>x.cat&&x.cat!=='休憩'),careWork=work.filter(x=>x.job==='介護職員'),supportWork=work.filter(x=>x.job==='介護支援員');
   const direct=careWork.filter(x=>x.cat==='直接介護').reduce((a,x)=>a+x.min,0),workMin=careWork.reduce((a,x)=>a+x.min,0),record=careWork.filter(x=>x.task.includes('記録')).reduce((a,x)=>a+x.min,0);
+  const overtimeWork=work.filter(x=>x.workClass==='残業'),overtimeMin=overtimeWork.reduce((a,x)=>a+x.min,0),overtimeGroups={};overtimeWork.forEach(x=>{const key=[x.date,x.staff,x.job,x.overtimeKind||'残業',x.task].join('|');overtimeGroups[key]=(overtimeGroups[key]||0)+x.min});
   const interruptRows=data.flatMap(x=>x.ints.map(i=>({date:x.date,time:x.time,staff:x.staff,job:x.job,task:x.task,interrupt:i}))).sort((a,b)=>(a.date+a.time+a.staff).localeCompare(b.date+b.time+b.staff,'ja'));
   const interruptSlots=new Set(interruptRows.map(x=>x.date+'|'+x.time+'|'+x.staff)).size;
-  const staff={};work.forEach(x=>{const s=staff[x.staff]??={job:x.job,work:0,direct:0,record:0,intSlots:0};s.work+=x.min;if(x.cat==='直接介護')s.direct+=x.min;if(x.task.includes('記録'))s.record+=x.min;if(x.ints.length)s.intSlots++});
+  const staff={};work.forEach(x=>{const s=staff[x.staff]??={job:x.job,work:0,direct:0,record:0,overtime:0,intSlots:0};s.work+=x.min;if(x.cat==='直接介護')s.direct+=x.min;if(x.task.includes('記録'))s.record+=x.min;if(x.workClass==='残業')s.overtime+=x.min;if(x.ints.length)s.intSlots++});
+  const overtimeTable='<div class="sum-title" style="margin-top:12px">残業中に行った業務</div>'+(Object.keys(overtimeGroups).length?'<div class="table-wrap"><table><thead><tr><th>日付</th><th>職員</th><th>職種</th><th>区分</th><th>業務</th><th>時間</th></tr></thead><tbody>'+Object.entries(overtimeGroups).sort((a,b)=>a[0].localeCompare(b[0],'ja')).map(([key,min])=>{const [date,staffName,job,kind,task]=key.split('|');return'<tr><td>'+esc(date)+'</td><td>'+esc(staffName)+'</td><td>'+esc(job)+'</td><td>'+esc(kind)+'</td><td>'+esc(task)+'</td><td>'+min+'分</td></tr>'}).join('')+'</tbody></table></div>':'<div class="role-note">残業実働はありません。</div>');
   const interruptTable='<div class="sum-title" style="margin-top:12px">時間帯別の並行・割込業務</div>'+(interruptRows.length?'<div class="table-wrap"><table><thead><tr><th>日付・時刻</th><th>職員</th><th>職種</th><th>主業務</th><th>並行・割込業務</th></tr></thead><tbody>'+interruptRows.map(x=>'<tr><td>'+esc(x.date+' '+x.time)+'</td><td>'+esc(x.staff)+'</td><td>'+esc(x.job)+'</td><td>'+esc(x.task)+'</td><td>'+esc(x.interrupt)+'</td></tr>').join('')+'</tbody></table></div>':'<div class="role-note">並行・割込業務は記録されていません。</div>');
-  const staffTable='<div class="sum-title" style="margin-top:12px">職員別の構成</div><div class="table-wrap"><table><thead><tr><th>職員記号</th><th>職種</th><th>実働</th><th>直接介護</th><th>直接介護率</th><th>記録</th><th>割込枠</th></tr></thead><tbody>'+Object.entries(staff).sort((a,b)=>b[1].work-a[1].work).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+esc(v.job)+'</td><td>'+v.work+'分</td><td>'+v.direct+'分</td><td>'+(v.work?v.direct/v.work*100:0).toFixed(1)+'%</td><td>'+v.record+'分</td><td>'+v.intSlots+'枠</td></tr>').join('')+'</tbody></table></div>';
-  $('allResult').innerHTML='<div class="metric-grid"><div class="metric"><b>'+(workMin?direct/workMin*100:0).toFixed(1)+'%</b><span>介護職員の実質直接介護率</span></div><div class="metric"><b>'+workMin+'分</b><span>介護職員の休憩除外実働</span></div><div class="metric"><b>'+record+'分</b><span>介護職員の記録業務</span></div><div class="metric"><b>'+interruptSlots+'枠</b><span>並行・割込があった時間枠</span></div></div>'+focusTable('介護職員の時間帯別業務集中',careWork)+focusTable('介護支援員の時間帯別業務集中',supportWork)+interruptTable+staffTable+'<div class="sum-foot">介護職員と介護支援員の集中率は分けて計算しています。並行・割込業務は主業務の時間へ重ねて加算しません。休憩と勤務外は分母から除外しています。</div>';
+  const staffTable='<div class="sum-title" style="margin-top:12px">職員別の構成</div><div class="table-wrap"><table><thead><tr><th>職員記号</th><th>職種</th><th>実働</th><th>残業</th><th>直接介護</th><th>直接介護率</th><th>記録</th><th>並行・割込枠</th></tr></thead><tbody>'+Object.entries(staff).sort((a,b)=>b[1].work-a[1].work).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+esc(v.job)+'</td><td>'+v.work+'分</td><td>'+v.overtime+'分</td><td>'+v.direct+'分</td><td>'+(v.work?v.direct/v.work*100:0).toFixed(1)+'%</td><td>'+v.record+'分</td><td>'+v.intSlots+'枠</td></tr>').join('')+'</tbody></table></div>';
+  $('allResult').innerHTML='<div class="metric-grid"><div class="metric"><b>'+(workMin?direct/workMin*100:0).toFixed(1)+'%</b><span>介護職員の実質直接介護率</span></div><div class="metric"><b>'+workMin+'分</b><span>介護職員の休憩除外実働</span></div><div class="metric"><b>'+record+'分</b><span>介護職員の記録業務</span></div><div class="metric"><b>'+overtimeMin+'分</b><span>全職員の残業実働</span></div><div class="metric"><b>'+interruptSlots+'枠</b><span>並行・割込があった時間枠</span></div></div>'+focusTable('介護職員の時間帯別業務集中',careWork)+focusTable('介護支援員の時間帯別業務集中',supportWork)+overtimeTable+interruptTable+staffTable+'<div class="sum-foot">実質直接介護率には実際に業務を行った残業時間も含めます。残業実働とその業務は別表でも確認できます。休憩と勤務外は分母から除外しています。</div>';
 }
 
 function showTab(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===id));$('page'+id[0].toUpperCase()+id.slice(1)).classList.add('on');if(id==='sum')updateSummary()}
 $('shiftBtns').onclick=e=>{if(e.target.dataset.sf)setShift(e.target.dataset.sf)};
 $('workStart').onchange=handleTimeChange;$('workEnd').onchange=handleTimeChange;
-$('btnStartEarly').onclick=()=>applyTimePreset('early');$('btnTimeReset').onclick=()=>applyTimePreset('reset');$('btnEndLate').onclick=()=>applyTimePreset('late');
 $('staffName').oninput=saveDraft;$('jobType').onchange=saveDraft;$('studyDate').onchange=saveDraft;$('btnClear').onclick=clearDraft;$('draftSelect').onchange=e=>switchDraft(e.target.value);$('btnNewDraft').onclick=createNewDraft;
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showTab(t.dataset.tab));$('btnGoSum').onclick=()=>showTab('sum');$('btnGoRec').onclick=()=>showTab('rec');$('btnCSV1').onclick=doCSV;$('btnCSV2').onclick=doCSV;$('csvFiles').onchange=e=>analyzeFiles([...e.target.files]);
 $('btnAnalyzeSaved').onclick=analyzeSaved;$('btnCSVAll').onclick=doCSVAll;
