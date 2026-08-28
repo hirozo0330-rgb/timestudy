@@ -48,11 +48,12 @@
 <div class="page on" id="pageRec"><div class="legend"><div class="leg"><span class="dot" style="background:#5599ee"></span>直接介護</div><div class="leg"><span class="dot" style="background:#6aa83b"></span>間接介護</div><div class="leg"><span class="dot" style="background:#a9a39a"></span>その他業務</div><div class="leg"><span class="dot" style="background:#d89235"></span>休憩</div></div><p class="notice">10分間で最も時間を使った「主業務」を1つ選択します。同時進行や途中の対応は「並行・割込業務」へ追加します。</p><div id="gridWrap"></div><div class="brow"><button class="btn blue" id="btnGoSum">📊 個人集計を見る</button><button class="btn white" id="btnCSV1">💾 CSV出力</button></div></div>
 <div class="page" id="pageSum"><div class="sum-card"><div class="sum-title">個人集計</div><div id="sumMeta" class="sum-foot"></div><div class="metric-grid"><div class="metric"><b id="directRate">0%</b><span>実質直接介護率</span></div><div class="metric"><b id="workMinutes">0分</b><span>休憩を除いた実働</span></div><div class="metric"><b id="recordMinutes">0分</b><span>記録業務</span></div><div class="metric"><b id="overtimeMinutes">0分</b><span>残業実働</span></div><div class="metric"><b id="interruptCount">0枠</b><span>並行・割込があった時間枠</span></div></div><div id="bars"></div><div id="subList"></div><div id="sumFoot" class="sum-foot"></div></div><div class="brow"><button class="btn blue" id="btnGoRec">✏️ 記録へ戻る</button><button class="btn green" id="btnCSV2">💾 CSV出力</button></div></div>
 <div class="page" id="pageAll"><div class="sum-card"><div class="sum-title">複数職員の全体分析</div><p class="notice">端末に保存した入力完了済みの職員データだけを直接集計します。CSVの一括出力や、出力済みCSVの読込みにも対応しています。</p><div class="brow"><button class="btn blue" id="btnAnalyzeSaved">📊 保存データを集計</button><button class="btn green" id="btnCSVAll">💾 全職員CSV</button></div><input class="upload" type="file" id="csvFiles" accept=".csv,text/csv" multiple><div id="allResult"><div class="sum-foot">「保存データを集計」またはCSVファイルを選択してください。</div></div></div></div>
-<p class="footer">タイムスタディ記録・分析アプリ v3.8（調査条件・完了管理対応）</p>
+<p class="footer">タイムスタディ記録・分析アプリ v3.8.1（業務分類修正版）</p>
 </div>
 <script>
 const SLOT_MIN=10;
-const CATS={a:{label:'直接介護',color:'#5599ee',subs:['食事介助','水分介助','排泄介助','入浴介助','更衣介助','整容','口腔ケア','移乗介助','移動介助','体位交換','服薬介助','ナースコール対応','会話・傾聴','見守り','巡回・安否確認','レクリエーション','外出・外気浴','バイタル測定','リハビリ・機能訓練','受診・通院付き添い','その他直接介護']},b:{label:'間接介護',color:'#6aa83b',subs:['ケース記録','食事記録（PC）','食事記録（紙）','水分記録（PC）','水分記録（紙）','入浴記録（PC）','入浴記録（紙）','排泄記録','記録確認','寮務日誌','事故報告・ヒヤリハット','その他記録','申し送り','業務上の連絡・調整','食事準備・配膳・下膳','入浴準備・片づけ','排泄準備・片づけ','物品準備・補充','居室環境整備','リネン交換','清掃','会議・相談','家族連絡','その他間接介護']},c:{label:'その他業務',color:'#a9a39a',subs:['ごみ捨て','衣類配布・整頓','洗濯物整理','研修','事務作業','報告書作成','職員対応','業者対応','その他']},d:{label:'休憩',color:'#d89235',subs:['休憩（食事含む）']}};
+const CATS={a:{label:'直接介護',color:'#5599ee',subs:['食事介助','水分介助','排泄介助','入浴介助','更衣介助','整容','口腔ケア','移乗介助','移動介助','体位交換','服薬介助','ナースコール対応','会話・傾聴','見守り','巡回・安否確認','レクリエーション','外出・外気浴','バイタル測定','リハビリ・機能訓練','受診・通院付き添い','その他直接介護']},b:{label:'間接介護',color:'#6aa83b',subs:['ケース記録','食事記録（PC）','食事記録（紙）','水分記録（PC）','水分記録（紙）','入浴記録（PC）','入浴記録（紙）','排泄記録','記録確認','寮務日誌','事故報告・ヒヤリハット','その他記録','申し送り','業務上の連絡・調整','食事準備・配膳・下膳','入浴準備・片づけ','排泄準備・片づけ','物品準備・補充','居室環境整備','リネン交換','衣類配布・整頓','家族連絡','その他間接介護']},c:{label:'その他業務',color:'#a9a39a',subs:['ごみ捨て','洗濯物整理','清掃','会議・相談','研修','事務作業','報告書作成','職員対応','業者対応','その他']},d:{label:'休憩',color:'#d89235',subs:['休憩（食事含む）']}};
+const TASK_CAT_OVERRIDES={'衣類配布・整頓':'b','会議・相談':'c','清掃':'c'};
 const INTERRUPTS=['ナースコール対応','電話対応','食事記録（紙）','水分記録（紙）','入浴記録（紙）','職員からの相談','利用者からの依頼','家族対応','緊急対応','物品を取りに行く','他職員の応援','その他'];
 const PARALLEL_GROUPS={a:{label:'直接介護',subs:CATS.a.subs},b:{label:'間接介護',subs:CATS.b.subs},c:{label:'その他業務',subs:CATS.c.subs},x:{label:'対応・連絡',subs:INTERRUPTS}};
 const SHIFTS={early:{label:'早番',start:'07:00',end:'16:00'},day:{label:'日勤',start:'09:30',end:'18:30'},late:{label:'遅番',start:'10:00',end:'19:00'},night:{label:'夜勤',start:'17:00',end:'10:00'},custom:{label:'時間勤務',start:'09:00',end:'15:00'}};
@@ -61,6 +62,9 @@ const STORE_KEY='timestudy-v3-4-drafts',LEGACY_KEY='timestudy-v3-3-draft';
 const SURVEY_IDS=['surveyLocation','surveyPhase','dayCondition','residentCount','careStaffCount','supportStaffCount','absenceStatus','bathingCount','specialSchedule','surveyNote'];
 let curShift='early',recData={},lastSchedule=null,activeDraftId=null,draftCompleted=false;
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function categoryKeyForTask(task,fallback=''){return TASK_CAT_OVERRIDES[task]||fallback}
+function categoryLabelForTask(task,fallback=''){const key=TASK_CAT_OVERRIDES[task];return key?CATS[key].label:fallback}
+function normalizeRecData(data={}){Object.values(data).forEach(r=>{if(r&&r.sub&&TASK_CAT_OVERRIDES[r.sub])r.cat=TASK_CAT_OVERRIDES[r.sub]});return data}
 
 function toMin(t){if(!/^\d{2}:\d{2}$/.test(t||''))return NaN;const [h,m]=t.split(':').map(Number);return h*60+m}
 function timeLabel(min){const prefix=min<0?'前日':min>=1440?'翌':'',n=((min%1440)+1440)%1440;return prefix+String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
@@ -111,7 +115,7 @@ function newDraftId(){return Date.now().toString(36)+'-'+Math.random().toString(
 
 function updateDraftUrl(){try{const url=new URL(location.href);url.searchParams.set('draft',activeDraftId);history.replaceState(null,'',url)}catch(e){}}
 
-function currentDraft(){return{version:3.8,staff:$('staffName').value,job:$('jobType').value,date:$('studyDate').value,shift:curShift,start:$('workStart').value,end:$('workEnd').value,survey:readSurvey(),completed:draftCompleted,recData,updatedAt:new Date().toISOString()}}
+function currentDraft(){return{version:'3.8.1',staff:$('staffName').value,job:$('jobType').value,date:$('studyDate').value,shift:curShift,start:$('workStart').value,end:$('workEnd').value,survey:readSurvey(),completed:draftCompleted,recData,updatedAt:new Date().toISOString()}}
 
 function refreshDraftSelect(){
   const store=getStore(),select=$('draftSelect'),current=activeDraftId;select.innerHTML='';
@@ -133,7 +137,7 @@ function saveDraft(changed=false){
 }
 
 function migrateLegacyDraft(){
-  try{const store=getStore();if(Object.keys(store.drafts).length)return;const raw=localStorage.getItem(LEGACY_KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||!d.recData)return;const id=newDraftId();store.drafts[id]={...d,version:3.8,completed:false,updatedAt:new Date().toISOString()};store.lastId=id;setStore(store)}catch(e){}
+  try{const store=getStore();if(Object.keys(store.drafts).length)return;const raw=localStorage.getItem(LEGACY_KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||!d.recData)return;const id=newDraftId();store.drafts[id]={...d,version:'3.8.1',completed:false,updatedAt:new Date().toISOString()};store.lastId=id;setStore(store)}catch(e){}
 }
 
 function toggleComplete(){
@@ -147,7 +151,7 @@ function loadDraftById(id){
   try{
     const store=getStore(),d=store.drafts[id];if(!d||!d.start||!d.end||!d.recData)return false;activeDraftId=id;
     $('staffName').value=d.staff||'';$('jobType').value=d.job||'介護職員';$('studyDate').value=d.date||$('studyDate').value;
-    curShift=SHIFTS[d.shift]?d.shift:'custom';$('workStart').value=d.start;$('workEnd').value=d.end;writeSurvey(d.survey||{});draftCompleted=!!d.completed;recData=d.recData||{};
+    curShift=SHIFTS[d.shift]?d.shift:'custom';$('workStart').value=d.start;$('workEnd').value=d.end;writeSurvey(d.survey||{});draftCompleted=!!d.completed;recData=normalizeRecData(d.recData||{});
     document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf===curShift));
     $('shiftNote').textContent='保存済みの基本勤務時間と記録を復元しました。前後1時間枠は任意入力です。';lastSchedule=scheduleSnapshot();buildGrid(true);updateDraftUrl();refreshDraftSelect();updateCompleteButton();updateDuplicateWarning();showSaveStatus('保存データを復元しました');return true;
   }catch(e){return false;}
@@ -259,7 +263,7 @@ function draftRange(d){return rangeFromTimes(d.start,d.end)}
 
 function rowsForDraft(d,withHeader=true){
   const base=draftRange(d),range=displayRange(base),rows=withHeader?[CSV_HEADER.slice()]:[];if(!range)return rows;
-  const s=d.survey||{};for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{},division=timeDivision(m,d.start,d.end);rows.push([d.date||'',d.staff||'',d.job||'',SHIFTS[d.shift]?.label||'時間勤務',d.start||'',d.end||'',timeLabel(m),SLOT_MIN,r.cat&&CATS[r.cat]?CATS[r.cat].label:'',r.sub||'',r.detail||'',(r.interrupts||[]).join('|'),r.interruptDetail||'',(r.interrupts||[]).length,division.workClass,division.overtimeKind,d.start||'',d.end||'',s.surveyLocation||'',s.surveyPhase||'',s.dayCondition||'',s.residentCount??'',s.careStaffCount??'',s.supportStaffCount??'',s.absenceStatus||'',s.bathingCount??'',s.specialSchedule||'',s.surveyNote||'',d.completed?'完了':'未完了'])}
+  const s=d.survey||{};for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{},division=timeDivision(m,d.start,d.end),catKey=categoryKeyForTask(r.sub,r.cat);rows.push([d.date||'',d.staff||'',d.job||'',SHIFTS[d.shift]?.label||'時間勤務',d.start||'',d.end||'',timeLabel(m),SLOT_MIN,catKey&&CATS[catKey]?CATS[catKey].label:'',r.sub||'',r.detail||'',(r.interrupts||[]).join('|'),r.interruptDetail||'',(r.interrupts||[]).length,division.workClass,division.overtimeKind,d.start||'',d.end||'',s.surveyLocation||'',s.surveyPhase||'',s.dayCondition||'',s.residentCount??'',s.careStaffCount??'',s.supportStaffCount??'',s.absenceStatus||'',s.bathingCount??'',s.specialSchedule||'',s.surveyNote||'',d.completed?'完了':'未完了'])}
   return rows;
 }
 
@@ -297,7 +301,7 @@ function parseCSV(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<t
 
 function rowsToAnalysisData(rows){
   if(!rows.length)return[];const h=rows[0],idx=n=>h.indexOf(n);if(idx('主業務')<0)return[];
-  return rows.slice(1).map(r=>{const val=n=>idx(n)>=0?r[idx(n)]||'':'',detail=val('主業務詳細'),intDetail=val('割込詳細'),rawInts=val('割込対応').split('|').filter(Boolean),start=val('基本勤務開始')||val('勤務開始'),end=val('基本勤務終了')||val('勤務終了'),inferred=timeDivision(minuteFromLabel(val('時刻')),start,end),rawClass=val('勤務区分')||inferred.workClass,workClass=rawClass==='時間外'?'残業':rawClass,kindIndex=idx('残業区分')>=0?idx('残業区分'):idx('時間外区分'),overtimeKind=kindIndex>=0?r[kindIndex]||inferred.overtimeKind:inferred.overtimeKind;return{date:val('実施日'),staff:val('職員記号'),job:val('職種'),time:val('時刻'),min:Number(val('記録単位（分）'))||10,cat:val('大分類'),task:val('主業務')+(detail?'（'+detail+'）':''),ints:rawInts.map(x=>x.includes('その他')&&intDetail?x+'（'+intDetail+'）':x),workClass,overtimeKind,location:val('調査場所'),phase:val('調査区分'),dayCondition:val('調査日の状態'),residentCount:val('利用者数'),careStaffCount:val('介護職員数'),supportStaffCount:val('支援員数'),absenceStatus:val('欠勤者'),bathingCount:val('入浴実施人数'),specialSchedule:val('特殊予定'),surveyNote:val('調査特記事項')}})
+  return rows.slice(1).map(r=>{const val=n=>idx(n)>=0?r[idx(n)]||'':'',mainTask=val('主業務'),detail=val('主業務詳細'),intDetail=val('割込詳細'),rawInts=val('割込対応').split('|').filter(Boolean),start=val('基本勤務開始')||val('勤務開始'),end=val('基本勤務終了')||val('勤務終了'),inferred=timeDivision(minuteFromLabel(val('時刻')),start,end),rawClass=val('勤務区分')||inferred.workClass,workClass=rawClass==='時間外'?'残業':rawClass,kindIndex=idx('残業区分')>=0?idx('残業区分'):idx('時間外区分'),overtimeKind=kindIndex>=0?r[kindIndex]||inferred.overtimeKind:inferred.overtimeKind;return{date:val('実施日'),staff:val('職員記号'),job:val('職種'),time:val('時刻'),min:Number(val('記録単位（分）'))||10,cat:categoryLabelForTask(mainTask,val('大分類')),task:mainTask+(detail?'（'+detail+'）':''),ints:rawInts.map(x=>x.includes('その他')&&intDetail?x+'（'+intDetail+'）':x),workClass,overtimeKind,location:val('調査場所'),phase:val('調査区分'),dayCondition:val('調査日の状態'),residentCount:val('利用者数'),careStaffCount:val('介護職員数'),supportStaffCount:val('支援員数'),absenceStatus:val('欠勤者'),bathingCount:val('入浴実施人数'),specialSchedule:val('特殊予定'),surveyNote:val('調査特記事項')}})
 }
 
 async function analyzeFiles(files){let data=[];for(const f of files)data.push(...rowsToAnalysisData(parseCSV((await f.text()).replace(/^\uFEFF/,''))));renderAll(data)}
