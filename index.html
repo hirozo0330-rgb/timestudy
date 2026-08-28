@@ -3,569 +3,345 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>タイムスタディ記録</title>
+<title>タイムスタディ記録・分析</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Meiryo',sans-serif;background:#f0efe9;color:#222;font-size:15px;-webkit-text-size-adjust:100%;}
-.app{max-width:480px;margin:0 auto;padding:10px;}
-h1{font-size:18px;font-weight:700;margin-bottom:10px;color:#1a1a1a;}
-
-/* ヘッダーカード */
-.card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:12px 14px;margin-bottom:10px;}
-.row{display:flex;gap:8px;margin-bottom:8px;}
-.row:last-child{margin-bottom:0;}
-.lbl{font-size:11px;color:#666;display:block;margin-bottom:4px;font-weight:600;}
-.row select,.row input[type=text],.row input[type=date]{
-  width:100%;font-size:14px;padding:9px 10px;
-  border:1px solid #ccc;border-radius:8px;background:#fafaf8;color:#222;
-  -webkit-appearance:none;appearance:none;
-}
-.f1{flex:1;}.f2{flex:2;}
-.snote{font-size:11px;color:#888;margin-top:6px;padding:5px 9px;background:#f7f6f2;border-radius:7px;border-left:3px solid #bbb;}
-
-/* シフトボタン */
-.shift-btns{display:flex;gap:5px;}
-.sbtn{
-  flex:1;padding:9px 2px;font-size:12px;font-weight:700;
-  border:1px solid #ccc;border-radius:8px;
-  background:#f5f5f5;color:#888;
-  cursor:pointer;text-align:center;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
-}
-.sbtn.on{background:#3a7bd5;color:#fff;border-color:#3a7bd5;}
-
-/* タブ */
-.tabs{display:flex;background:#ddd;border-radius:10px;padding:3px;margin-bottom:12px;gap:3px;}
-.tab{
-  flex:1;text-align:center;padding:10px 0;font-size:14px;font-weight:700;
-  color:#888;border-radius:8px;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;user-select:none;
-}
-.tab.on{background:#fff;color:#222;box-shadow:0 1px 4px rgba(0,0,0,0.15);}
-
-/* ページ */
-.page{display:none;}
-.page.on{display:block;}
-
-/* 凡例 */
-.legend{display:flex;gap:12px;margin-bottom:6px;flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;}
-.ldot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
-.otleg{display:flex;align-items:center;gap:5px;font-size:11px;color:#8a5c00;margin-bottom:8px;}
-.otdot{width:11px;height:11px;border-radius:3px;background:#fff3d0;border:2px solid #d4a017;flex-shrink:0;}
-.notice{font-size:11px;color:#aaa;text-align:center;padding:2px 0 10px;}
-
-/* 時間帯ヘッダー */
-.hour-hd{
-  font-size:11px;font-weight:700;color:#999;
-  padding:6px 4px 2px;margin-top:2px;
-}
-.hour-hd.ot-hd{color:#c87800;}
-
-/* コマ行 */
-.it{
-  background:#fff;border:1px solid #ddd;border-radius:12px;
-  margin-bottom:6px;display:flex;align-items:flex-start;padding:8px 8px 8px 10px;
-}
-.it.ot{border-left:3px solid #d4a017;background:#fffdf5;}
-
-/* 時刻セル */
-.it-tm{
-  width:50px;min-width:50px;flex-shrink:0;
-  font-size:13px;font-weight:700;color:#333;
-  padding-top:5px;
-}
-.it-ot{font-size:9px;color:#8a5c00;font-weight:700;background:#fff3d0;padding:1px 4px;border-radius:4px;display:block;margin-top:2px;}
-
-/* 入力セル */
-.it-in{flex:1;min-width:0;}
-
-/* 区分ボタン行 */
-.cat-row{display:flex;gap:5px;margin-bottom:5px;}
-.cat-btn{
-  flex:1;padding:8px 2px;font-size:11px;font-weight:700;
-  border:1px solid #ccc;border-radius:7px;
-  background:#f5f5f5;color:#777;
-  cursor:pointer;text-align:center;
-  -webkit-tap-highlight-color:transparent;user-select:none;
-}
-.cat-btn.on-a{background:#ddeeff;color:#1a5fa8;border-color:#5599ee;}
-.cat-btn.on-b{background:#e2f2d0;color:#2d6010;border-color:#5ea32e;}
-.cat-btn.on-c{background:#eeece6;color:#444;border-color:#aba89e;}
-
-/* 中分類 */
-.sub-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
-.sub-btn{
-  padding:5px 10px;font-size:11px;
-  border:1px solid #ccc;border-radius:20px;
-  background:#f5f5f5;color:#666;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;user-select:none;
-  white-space:nowrap;
-}
-.sub-btn.on-a{background:#ddeeff;color:#1a5fa8;border-color:#5599ee;font-weight:700;}
-.sub-btn.on-b{background:#e2f2d0;color:#2d6010;border-color:#5ea32e;font-weight:700;}
-.sub-btn.on-c{background:#eeece6;color:#444;border-color:#aba89e;font-weight:700;}
-
-/* ボタン行 */
-.brow{display:flex;gap:8px;margin-top:12px;}
-.bblu{flex:1;padding:13px;font-size:14px;font-weight:700;border:none;border-radius:10px;background:#3a7bd5;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.bwht{flex:1;padding:13px;font-size:14px;font-weight:700;border:1.5px solid #bbb;border-radius:10px;background:#fff;color:#444;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.bgrn{flex:1;padding:13px;font-size:14px;font-weight:700;border:none;border-radius:10px;background:#2e7d32;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-
-/* 集計 */
-.sum-card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:14px;margin-bottom:10px;}
-.sum-ttl{font-size:14px;font-weight:700;margin-bottom:10px;padding-left:8px;border-left:4px solid #3a7bd5;}
-.sum-meta{font-size:12px;color:#888;margin-bottom:14px;}
-.bar-block{margin-bottom:14px;}
-.bar-hd{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:5px;}
-.bar-bg{width:100%;height:24px;background:#eee;border-radius:8px;overflow:hidden;}
-.bar-fg{height:100%;border-radius:8px;transition:width 0.4s ease;}
-.sub-list{padding-left:10px;margin-top:6px;}
-.sub-item{display:flex;justify-content:space-between;font-size:11px;color:#888;padding:2px 0;border-bottom:1px dashed #f0f0f0;}
-.sum-foot{margin-top:10px;padding-top:8px;border-top:1px solid #eee;font-size:12px;color:#bbb;}
-
-.footer{margin-top:12px;font-size:11px;color:#ccc;text-align:center;padding-bottom:12px;}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans','Meiryo',sans-serif;background:#f3f2ed;color:#222;font-size:15px;-webkit-text-size-adjust:100%}.app{max-width:760px;margin:0 auto;padding:10px}h1{font-size:19px;margin:2px 0 10px}.card,.sum-card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:13px 14px;margin-bottom:10px}.row{display:flex;gap:8px;margin-bottom:9px}.row:last-child{margin-bottom:0}.f1{flex:1}.f2{flex:2}.lbl{font-size:11px;color:#666;display:block;margin-bottom:4px;font-weight:700}.row select,.row input[type=text],.row input[type=date],.row input[type=time]{width:100%;font-size:14px;padding:9px;border:1px solid #ccc;border-radius:8px;background:#fafaf8;color:#222}.snote,.notice{font-size:11px;color:#666;margin-top:7px;padding:7px 9px;background:#f7f6f2;border-radius:7px;border-left:3px solid #999}.warn{border-left-color:#d68b00;background:#fff8e8;color:#765000}.shift-btns,.tabs{display:flex;gap:4px}.sbtn,.tab{flex:1;padding:9px 3px;font-size:12px;font-weight:700;border:1px solid #ccc;border-radius:8px;background:#f5f5f5;color:#777;cursor:pointer;text-align:center;user-select:none}.sbtn.on{background:#3a7bd5;color:#fff;border-color:#3a7bd5}.tabs{background:#ddd;border-radius:10px;padding:3px;margin-bottom:11px}.tab{border:0;background:transparent}.tab.on{background:#fff;color:#222;box-shadow:0 1px 4px rgba(0,0,0,.15)}.page{display:none}.page.on{display:block}.legend{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 8px}.leg{font-size:11px;color:#555;display:flex;align-items:center;gap:4px}.dot{width:10px;height:10px;border-radius:50%}.hour-hd{font-size:11px;font-weight:700;color:#888;padding:8px 4px 3px}.it{background:#fff;border:1px solid #ddd;border-radius:12px;margin-bottom:7px;display:flex;align-items:flex-start;padding:8px}.it-tm{width:54px;min-width:54px;font-size:13px;font-weight:700;padding-top:5px}.it-in{flex:1;min-width:0}.cat-row,.sub-row,.interrupt-row{display:flex;gap:5px;flex-wrap:wrap}.cat-row{margin-bottom:5px}.cat-btn,.sub-btn,.int-btn{padding:7px 8px;font-size:11px;border:1px solid #ccc;border-radius:8px;background:#f5f5f5;color:#666;cursor:pointer;user-select:none}.cat-btn{flex:1;text-align:center;font-weight:700}.cat-btn.on-a,.sub-btn.on-a{background:#deedff;color:#155b9f;border-color:#5599ee}.cat-btn.on-b,.sub-btn.on-b{background:#e5f3d8;color:#2d6010;border-color:#6aa83b}.cat-btn.on-c,.sub-btn.on-c{background:#eeeae3;color:#4d4840;border-color:#a9a39a}.cat-btn.on-d,.sub-btn.on-d{background:#ffe8cd;color:#825000;border-color:#d89235}.sub-row{margin:2px 0 6px}.sub-btn{border-radius:18px}.interrupt-box{margin-top:5px;padding:7px;background:#fff8e8;border:1px solid #efd8aa;border-radius:9px}.int-btn.on{background:#ffedbd;border-color:#c68a13;color:#684800;font-weight:700}.int-title{font-size:10px;color:#87652d;margin-bottom:5px}.selected-int{font-size:10px;color:#7a5b28;margin-top:5px}.brow{display:flex;gap:8px;margin-top:12px}.btn{flex:1;padding:13px;font-size:13px;font-weight:700;border-radius:10px;cursor:pointer}.blue{border:0;background:#3a7bd5;color:#fff}.green{border:0;background:#2e7d32;color:#fff}.white{border:1px solid #aaa;background:#fff;color:#444}.sum-title{font-size:15px;font-weight:700;margin-bottom:9px;padding-left:8px;border-left:4px solid #3a7bd5}.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}.metric{background:#f7f7f4;border-radius:10px;padding:10px}.metric b{display:block;font-size:18px;color:#1a5fa8}.metric span{font-size:10px;color:#777}.bar-block{margin-bottom:12px}.bar-hd{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:4px}.bar-bg{height:20px;background:#eee;border-radius:7px;overflow:hidden}.bar-fg{height:100%;border-radius:7px}.sub-item{display:flex;justify-content:space-between;font-size:11px;color:#666;padding:4px;border-bottom:1px dashed #eee}.sum-foot{font-size:11px;color:#777;margin-top:9px;padding-top:8px;border-top:1px solid #eee}.upload{display:block;width:100%;padding:12px;border:2px dashed #aaa;border-radius:10px;background:#fafafa;margin:8px 0 12px}.table-wrap{overflow:auto;margin-top:8px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #ddd;padding:6px;text-align:left;white-space:nowrap}th{background:#edf3fa}.privacy{font-size:11px;color:#8a3d00;background:#fff1e6;border:1px solid #efc9aa;border-radius:9px;padding:8px;margin-bottom:10px}.footer{margin:12px 0;font-size:10px;color:#aaa;text-align:center}@media(max-width:520px){.row.stack{display:block}.row.stack>div{margin-bottom:8px}.metric-grid{grid-template-columns:repeat(2,1fr)}.tab{font-size:11px}}
+</style>
+<style>
+.detail-input{width:100%;margin-top:6px;padding:8px 10px;border:1px solid #c8c8c8;border-radius:8px;font-size:12px;background:#fff}
+.draft-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.save-status{font-size:10px;color:#397446}
+.clear-btn{padding:6px 9px;border:1px solid #bbb;border-radius:7px;background:#fff;color:#666;font-size:10px}
+.role-note{font-size:11px;color:#777;padding:8px;background:#f7f7f4;border-radius:8px}
+.draft-select{width:100%;font-size:13px;padding:9px;border:1px solid #bbb;border-radius:8px;background:#f8fbff}
+.new-btn{padding:9px 12px;border:0;border-radius:8px;background:#2e7d32;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
+.it.overtime-slot{border-color:#e4a94c;background:#fffaf0}.overtime-tag{display:block;margin-top:3px;color:#a35b00;font-size:9px;font-weight:700}
+.survey-panel summary{font-size:14px;font-weight:700;cursor:pointer;color:#285a8d}.survey-panel[open] summary{margin-bottom:10px}.row input[type=number],.row textarea{width:100%;font-size:14px;padding:9px;border:1px solid #ccc;border-radius:8px;background:#fafaf8;color:#222}.row textarea{min-height:58px;resize:vertical}.complete-btn{width:100%;margin-top:8px;padding:11px;border:1px solid #2e7d32;border-radius:9px;background:#fff;color:#2e7d32;font-size:13px;font-weight:700}.complete-btn.on{background:#2e7d32;color:#fff}.duplicate-warning{display:none;margin-top:7px;padding:7px 9px;border-radius:7px;background:#fff1e6;color:#9a4300;font-size:11px;font-weight:700}
 </style>
 </head>
 <body>
 <div class="app">
-<h1>🕐 タイムスタディ記録</h1>
-
-<!-- ヘッダー -->
+<h1>🕐 タイムスタディ記録・分析</h1>
+<div class="privacy">職員名は本名ではなく、施設内で決めたイニシャルまたは匿名記号を入力してください。</div>
+<details class="card survey-panel" open>
+  <summary>調査条件（新規職員へ引き継ぎ）</summary>
+  <div class="row"><div class="f1"><span class="lbl">調査場所</span><input type="text" id="surveyLocation" value="2階"></div><div class="f1"><span class="lbl">調査区分</span><select id="surveyPhase"><option>改善前</option><option selected>再調査</option><option>改善後</option></select></div><div class="f1"><span class="lbl">調査日の状態</span><select id="dayCondition"><option>通常日</option><option>特殊日</option></select></div></div>
+  <div class="row"><div class="f1"><span class="lbl">利用者数</span><input type="number" id="residentCount" min="0" inputmode="numeric"></div><div class="f1"><span class="lbl">介護職員数</span><input type="number" id="careStaffCount" min="0" inputmode="numeric"></div><div class="f1"><span class="lbl">支援員数</span><input type="number" id="supportStaffCount" min="0" inputmode="numeric" value="0"></div></div>
+  <div class="row"><div class="f1"><span class="lbl">欠勤者</span><select id="absenceStatus"><option>なし</option><option>あり</option></select></div><div class="f1"><span class="lbl">入浴実施人数</span><input type="number" id="bathingCount" min="0" inputmode="numeric" value="0"></div></div>
+  <div class="row"><div class="f1"><span class="lbl">行事・受診などの特殊予定</span><input type="text" id="specialSchedule" placeholder="通常日は「なし」で可"></div></div>
+  <div class="row"><div class="f1"><span class="lbl">調査日の特記事項</span><textarea id="surveyNote" placeholder="利用者の状態、急な欠勤、通常と異なる配置など"></textarea></div></div>
+  <div class="snote">同じ調査日の職員を「＋ 新規入力」で追加すると、この条件を引き継ぎます。</div>
+</details>
 <div class="card">
-  <div class="row">
-    <div class="f2">
-      <span class="lbl">職員名</span>
-      <input type="text" id="staffName" placeholder="例：田中 花子">
-    </div>
-    <div class="f1">
-      <span class="lbl">職種</span>
-      <select id="jobType">
-        <option>介護職員</option>
-        <option>介護支援員</option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="f1">
-      <span class="lbl">実施日</span>
-      <input type="date" id="studyDate">
-    </div>
-    <div class="f1">
-      <span class="lbl">シフト</span>
-      <div class="shift-btns" id="shiftBtns">
-        <div class="sbtn on" data-sf="1">早番</div>
-        <div class="sbtn" data-sf="2">日勤</div>
-        <div class="sbtn" data-sf="3">遅番</div>
-        <div class="sbtn" data-sf="4">夜勤</div>
-      </div>
-    </div>
-  </div>
-  <div id="shiftNote" class="snote">早番：7:00〜16:00（表示範囲 6:00〜17:00）</div>
+  <div class="row"><div class="f2"><span class="lbl">保存データを切り替える</span><select id="draftSelect" class="draft-select"></select></div><div><span class="lbl">別の職員</span><button id="btnNewDraft" class="new-btn" type="button">＋ 新規入力</button></div></div>
+  <div class="row"><div class="f2"><span class="lbl">職員イニシャル・匿名記号</span><input type="text" id="staffName" placeholder="例：A職員、K.A"></div><div class="f1"><span class="lbl">職種</span><select id="jobType"><option>介護職員</option><option>介護支援員</option><option>その他</option></select></div></div>
+  <div class="row"><div class="f1"><span class="lbl">実施日</span><input type="date" id="studyDate"></div><div class="f2"><span class="lbl">勤務形態</span><div class="shift-btns" id="shiftBtns"><div class="sbtn on" data-sf="early">早番</div><div class="sbtn" data-sf="day">日勤</div><div class="sbtn" data-sf="late">遅番</div><div class="sbtn" data-sf="night">夜勤</div><div class="sbtn" data-sf="custom">時間勤務</div></div></div></div>
+  <div class="row"><div class="f1"><span class="lbl">基本勤務開始</span><input type="time" id="workStart" step="600"></div><div class="f1"><span class="lbl">基本勤務終了</span><input type="time" id="workEnd" step="600"></div></div>
+  <div id="shiftNote" class="snote">基本勤務の前後1時間も自動表示します。前後枠は実際に業務をした場合だけ入力してください。</div>
+  <div class="snote warn">基本勤務内は入力必須です。前後1時間の「残業・任意」枠は、業務を行った場合だけ入力し、空欄は勤務していない時間として扱います。</div>
+  <div class="snote">複数職員を入力する場合は、職員ごとに「＋ 新規入力」を押してください。Safariのタブを閉じても、同じ端末・通常モードなら上の一覧から復元できます。</div>
+  <div id="duplicateWarning" class="duplicate-warning">同じ実施日・職員記号の保存データがあります。</div>
+  <button id="btnComplete" class="complete-btn" type="button">✓ 入力完了にする</button>
+  <div class="draft-row"><span id="saveStatus" class="save-status">職員ごとにこの端末へ自動保存されます</span><button id="btnClear" class="clear-btn" type="button">この職員データを削除</button></div>
 </div>
-
-<!-- タブ -->
-<div class="tabs">
-  <div class="tab on" id="tabRec">✏️ 記録</div>
-  <div class="tab" id="tabSum">📊 集計</div>
+<div class="tabs"><div class="tab on" data-tab="rec">✏️ 記録</div><div class="tab" data-tab="sum">📊 個人集計</div><div class="tab" data-tab="all">📈 全体分析</div></div>
+<div class="page on" id="pageRec"><div class="legend"><div class="leg"><span class="dot" style="background:#5599ee"></span>直接介護</div><div class="leg"><span class="dot" style="background:#6aa83b"></span>間接介護</div><div class="leg"><span class="dot" style="background:#a9a39a"></span>その他業務</div><div class="leg"><span class="dot" style="background:#d89235"></span>休憩</div></div><p class="notice">10分間で最も時間を使った「主業務」を1つ選択します。同時進行や途中の対応は「並行・割込業務」へ追加します。</p><div id="gridWrap"></div><div class="brow"><button class="btn blue" id="btnGoSum">📊 個人集計を見る</button><button class="btn white" id="btnCSV1">💾 CSV出力</button></div></div>
+<div class="page" id="pageSum"><div class="sum-card"><div class="sum-title">個人集計</div><div id="sumMeta" class="sum-foot"></div><div class="metric-grid"><div class="metric"><b id="directRate">0%</b><span>実質直接介護率</span></div><div class="metric"><b id="workMinutes">0分</b><span>休憩を除いた実働</span></div><div class="metric"><b id="recordMinutes">0分</b><span>記録業務</span></div><div class="metric"><b id="overtimeMinutes">0分</b><span>残業実働</span></div><div class="metric"><b id="interruptCount">0枠</b><span>並行・割込があった時間枠</span></div></div><div id="bars"></div><div id="subList"></div><div id="sumFoot" class="sum-foot"></div></div><div class="brow"><button class="btn blue" id="btnGoRec">✏️ 記録へ戻る</button><button class="btn green" id="btnCSV2">💾 CSV出力</button></div></div>
+<div class="page" id="pageAll"><div class="sum-card"><div class="sum-title">複数職員の全体分析</div><p class="notice">端末に保存した入力完了済みの職員データだけを直接集計します。CSVの一括出力や、出力済みCSVの読込みにも対応しています。</p><div class="brow"><button class="btn blue" id="btnAnalyzeSaved">📊 保存データを集計</button><button class="btn green" id="btnCSVAll">💾 全職員CSV</button></div><input class="upload" type="file" id="csvFiles" accept=".csv,text/csv" multiple><div id="allResult"><div class="sum-foot">「保存データを集計」またはCSVファイルを選択してください。</div></div></div></div>
+<p class="footer">タイムスタディ記録・分析アプリ v3.8（調査条件・完了管理対応）</p>
 </div>
-
-<!-- 記録ページ -->
-<div class="page on" id="pageRec">
-  <div class="legend">
-    <div class="leg"><div class="ldot" style="background:#5599ee;"></div>直接介護</div>
-    <div class="leg"><div class="ldot" style="background:#5ea32e;"></div>間接介護</div>
-    <div class="leg"><div class="ldot" style="background:#aba89e;"></div>非介護</div>
-  </div>
-  <div class="otleg"><div class="otdot"></div>残業・早出の時間帯（オレンジ背景）</div>
-  <p class="notice">区分をタップ → 中分類を選択して記録</p>
-  <div id="gridWrap"></div>
-  <div class="brow">
-    <button class="bblu" id="btnGoSum">📊 集計を見る</button>
-    <button class="bwht" id="btnCSV1">💾 CSV出力</button>
-  </div>
-</div>
-
-<!-- 集計ページ -->
-<div class="page" id="pageSum">
-  <div class="sum-card">
-    <div class="sum-ttl">集計結果</div>
-    <div class="sum-meta" id="sumMeta"></div>
-    <div class="bar-block">
-      <div class="bar-hd">
-        <span style="color:#1a5fa8;">■ 直接介護</span>
-        <span id="vA">0%（0分）</span>
-      </div>
-      <div class="bar-bg"><div class="bar-fg" id="bA" style="background:#5599ee;width:0%;"></div></div>
-      <div class="sub-list" id="subA"></div>
-    </div>
-    <div class="bar-block">
-      <div class="bar-hd">
-        <span style="color:#2d6010;">■ 間接介護</span>
-        <span id="vB">0%（0分）</span>
-      </div>
-      <div class="bar-bg"><div class="bar-fg" id="bB" style="background:#5ea32e;width:0%;"></div></div>
-      <div class="sub-list" id="subB"></div>
-    </div>
-    <div class="bar-block">
-      <div class="bar-hd">
-        <span style="color:#555;">■ 非介護</span>
-        <span id="vC">0%（0分）</span>
-      </div>
-      <div class="bar-bg"><div class="bar-fg" id="bC" style="background:#aba89e;width:0%;"></div></div>
-      <div class="sub-list" id="subC"></div>
-    </div>
-    <div class="sum-foot" id="sumFoot"></div>
-  </div>
-  <div class="brow">
-    <button class="bblu" id="btnGoRec">✏️ 記録に戻る</button>
-    <button class="bgrn" id="btnCSV2">💾 CSV出力</button>
-  </div>
-</div>
-
-<p class="footer">タイムスタディ記録アプリ v2.0 ©道志会</p>
-</div>
-
 <script>
-// ===== データ定義 =====
-var CATS = {
-  a: {
-    label: '直接介護', color: '#5599ee',
-    subs: ['食事介助','排泄介助','入浴介助','整容','レクリエーション実施','外出・外気浴']
-  },
-  b: {
-    label: '間接介護', color: '#5ea32e',
-    subs: ['食事準備・配膳・下膳','入浴準備・片づけ','排泄支援準備・片づけ','居室環境整備','レク準備','記録']
-  },
-  c: {
-    label: '非介護', color: '#aba89e',
-    subs: ['リネン交換','衣類配布・整頓','ごみ捨て','物品補充','清掃','休憩（食事含む）','報告書など書類作成']
-  }
-};
+const SLOT_MIN=10;
+const CATS={a:{label:'直接介護',color:'#5599ee',subs:['食事介助','水分介助','排泄介助','入浴介助','更衣介助','整容','口腔ケア','移乗介助','移動介助','体位交換','服薬介助','ナースコール対応','会話・傾聴','見守り','巡回・安否確認','レクリエーション','外出・外気浴','バイタル測定','リハビリ・機能訓練','受診・通院付き添い','その他直接介護']},b:{label:'間接介護',color:'#6aa83b',subs:['ケース記録','食事記録（PC）','食事記録（紙）','水分記録（PC）','水分記録（紙）','入浴記録（PC）','入浴記録（紙）','排泄記録','記録確認','寮務日誌','事故報告・ヒヤリハット','その他記録','申し送り','業務上の連絡・調整','食事準備・配膳・下膳','入浴準備・片づけ','排泄準備・片づけ','物品準備・補充','居室環境整備','リネン交換','清掃','会議・相談','家族連絡','その他間接介護']},c:{label:'その他業務',color:'#a9a39a',subs:['ごみ捨て','衣類配布・整頓','洗濯物整理','研修','事務作業','報告書作成','職員対応','業者対応','その他']},d:{label:'休憩',color:'#d89235',subs:['休憩（食事含む）']}};
+const INTERRUPTS=['ナースコール対応','電話対応','食事記録（紙）','水分記録（紙）','入浴記録（紙）','職員からの相談','利用者からの依頼','家族対応','緊急対応','物品を取りに行く','他職員の応援','その他'];
+const PARALLEL_GROUPS={a:{label:'直接介護',subs:CATS.a.subs},b:{label:'間接介護',subs:CATS.b.subs},c:{label:'その他業務',subs:CATS.c.subs},x:{label:'対応・連絡',subs:INTERRUPTS}};
+const SHIFTS={early:{label:'早番',start:'07:00',end:'16:00'},day:{label:'日勤',start:'09:30',end:'18:30'},late:{label:'遅番',start:'10:00',end:'19:00'},night:{label:'夜勤',start:'17:00',end:'10:00'},custom:{label:'時間勤務',start:'09:00',end:'15:00'}};
+const CSV_HEADER=['実施日','職員記号','職種','勤務形態','勤務開始','勤務終了','時刻','記録単位（分）','大分類','主業務','主業務詳細','割込対応','割込詳細','割込対応数','勤務区分','残業区分','基本勤務開始','基本勤務終了','調査場所','調査区分','調査日の状態','利用者数','介護職員数','支援員数','欠勤者','入浴実施人数','特殊予定','調査特記事項','入力完了'];
+const STORE_KEY='timestudy-v3-4-drafts',LEGACY_KEY='timestudy-v3-3-draft';
+const SURVEY_IDS=['surveyLocation','surveyPhase','dayCondition','residentCount','careStaffCount','supportStaffCount','absenceStatus','bathingCount','specialSchedule','surveyNote'];
+let curShift='early',recData={},lastSchedule=null,activeDraftId=null,draftCompleted=false;
+const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-var SHIFTS = {
-  1: {label:'早番（7:00〜16:00）',   dispS:24,  dispE:68,  coreS:28, coreE:64,  note:'早番：7:00〜16:00（表示範囲 6:00〜17:00）'},
-  2: {label:'日勤（9:00〜18:30）',   dispS:32,  dispE:78,  coreS:36, coreE:74,  note:'日勤：9:00〜18:30（表示範囲 8:00〜19:30）'},
-  3: {label:'遅番（10:00〜19:00）',  dispS:36,  dispE:80,  coreS:40, coreE:76,  note:'遅番：10:00〜19:00（表示範囲 9:00〜20:00）'},
-  4: {label:'夜勤（17:00〜翌10:00）',dispS:64,  dispE:140, coreS:68, coreE:136, note:'夜勤：17:00〜翌10:00（表示範囲 16:00〜翌11:00）'}
-};
+function toMin(t){if(!/^\d{2}:\d{2}$/.test(t||''))return NaN;const [h,m]=t.split(':').map(Number);return h*60+m}
+function timeLabel(min){const prefix=min<0?'前日':min>=1440?'翌':'',n=((min%1440)+1440)%1440;return prefix+String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
 
-var curShift = 1;
-// 記録データ保持: key=スロット番号, value={cat:'a'/'b'/'c'/null, sub:string/null}
-var recData = {};
+function rangeFromTimes(start,end){let s=toMin(start),e=toMin(end);if(!Number.isFinite(s)||!Number.isFinite(e))return null;if(e<=s)e+=1440;return{s,e}}
 
-// ===== ユーティリティ =====
-function pad(n) { return n < 10 ? '0' + n : '' + n; }
-function slotToTime(s) {
-  var totalMin = s * 15;
-  var h = Math.floor(totalMin / 60);
-  var m = totalMin % 60;
-  return (h >= 24 ? '翌' : '') + pad(h % 24) + ':' + pad(m);
-}
-function isOT(s) {
-  var c = SHIFTS[curShift];
-  return s < c.coreS || s >= c.coreE;
-}
+function getRange(){return rangeFromTimes($('workStart').value,$('workEnd').value)}
 
-// ===== グリッド生成 =====
-function buildGrid() {
-  var cfg = SHIFTS[curShift];
-  var wrap = document.getElementById('gridWrap');
-  wrap.innerHTML = '';
-  recData = {};
+function displayRange(base=getRange()){return base?{s:base.s-60,e:base.e+60}:null}
 
-  var lastH = -1;
+function scheduleSnapshot(){return{shift:curShift,start:$('workStart').value,end:$('workEnd').value}}
 
-  for (var s = cfg.dispS; s < cfg.dispE; s++) {
-    recData[s] = { cat: null, sub: null };
+function timeDivision(min,start=$('workStart').value,end=$('workEnd').value){const base=rangeFromTimes(start,end);if(!base)return{workClass:'通常勤務',overtimeKind:''};if(min<base.s)return{workClass:'残業',overtimeKind:'開始前'};if(min>=base.e)return{workClass:'残業',overtimeKind:'終了後'};return{workClass:'通常勤務',overtimeKind:''}}
 
-    var h = Math.floor(s * 15 / 60);
-    var ot = isOT(s);
-    var tm = slotToTime(s);
+function minuteFromLabel(label){const text=String(label||''),next=text.startsWith('翌'),previous=text.startsWith('前日'),raw=text.replace(/^(翌|前日)/,'');const n=toMin(raw);return Number.isFinite(n)?n+(next?1440:previous?-1440:0):NaN}
 
-    // 時間帯ヘッダー
-    if (h !== lastH) {
-      lastH = h;
-      var hLabel = (h >= 24 ? '翌' : '') + pad(h % 24) + ':00台';
-      var hdDiv = document.createElement('div');
-      hdDiv.className = 'hour-hd' + (ot ? ' ot-hd' : '');
-      hdDiv.textContent = hLabel;
-      wrap.appendChild(hdDiv);
-    }
+function rowHasInput(r={}){return!!(r.cat||r.sub||(r.interrupts&&r.interrupts.length)||r.detail||r.interruptDetail)}
 
-    // コマ行
-    var row = document.createElement('div');
-    row.className = 'it' + (ot ? ' ot' : '');
-    row.id = 'row_' + s;
+function hasEntries(){return Object.values(recData).some(rowHasInput)}
 
-    // 時刻
-    var tmDiv = document.createElement('div');
-    tmDiv.className = 'it-tm';
-    tmDiv.innerHTML = tm + (ot ? '<span class="it-ot">残業</span>' : '');
-    row.appendChild(tmDiv);
-
-    // 入力部分
-    var inDiv = document.createElement('div');
-    inDiv.className = 'it-in';
-
-    // 区分ボタン行
-    var catRow = document.createElement('div');
-    catRow.className = 'cat-row';
-
-    var catKeys = ['a', 'b', 'c'];
-    var catLabels = ['直接介護', '間接介護', '非介護'];
-    for (var ki = 0; ki < 3; ki++) {
-      (function(slot, k, kLabel) {
-        var btn = document.createElement('div');
-        btn.className = 'cat-btn';
-        btn.id = 'cat_' + slot + '_' + k;
-        btn.textContent = kLabel;
-        btn.addEventListener('click', function() {
-          onCatClick(slot, k);
-        });
-        catRow.appendChild(btn);
-      })(s, catKeys[ki], catLabels[ki]);
-    }
-    inDiv.appendChild(catRow);
-
-    // 中分類行（初期非表示）
-    for (var ki2 = 0; ki2 < 3; ki2++) {
-      (function(slot, k) {
-        var subRow = document.createElement('div');
-        subRow.className = 'sub-row';
-        subRow.id = 'sub_' + slot + '_' + k;
-        subRow.style.display = 'none';
-        var subs = CATS[k].subs;
-        for (var ji = 0; ji < subs.length; ji++) {
-          (function(sub) {
-            var sbtn = document.createElement('div');
-            sbtn.className = 'sub-btn';
-            sbtn.textContent = sub;
-            sbtn.addEventListener('click', function() {
-              onSubClick(slot, k, sub, sbtn);
-            });
-            subRow.appendChild(sbtn);
-          })(subs[ji]);
-        }
-        inDiv.appendChild(subRow);
-      })(s, catKeys[ki2]);
-    }
-
-    row.appendChild(inDiv);
-    wrap.appendChild(row);
-  }
+function validateSchedule(showMessage=true){
+  const range=getRange(),start=toMin($('workStart').value),end=toMin($('workEnd').value);
+  let message='';
+  if(!range)message='勤務開始と終了を入力してください。';
+  else if(start%SLOT_MIN!==0||end%SLOT_MIN!==0)message='勤務開始と終了は10分単位で設定してください。';
+  else if(range.e-range.s<=0||range.e-range.s>1320)message='基本勤務時間は22時間以内で設定してください。';
+  if(message&&showMessage)alert(message);
+  return !message;
 }
 
-// ===== 区分ボタン操作 =====
-function onCatClick(slot, cat) {
-  var prev = recData[slot].cat;
+function showSaveStatus(message){$('saveStatus').textContent=message;}
 
-  // 同じボタンを再タップ→解除
-  if (prev === cat) {
-    recData[slot].cat = null;
-    recData[slot].sub = null;
-  } else {
-    recData[slot].cat = cat;
-    recData[slot].sub = null;
-    // 他カテゴリの中分類ボタンをリセット
-    var others = ['a','b','c'];
-    for (var i = 0; i < 3; i++) {
-      if (others[i] !== cat) {
-        var sr = document.getElementById('sub_' + slot + '_' + others[i]);
-        if (sr) {
-          var btns = sr.querySelectorAll('.sub-btn');
-          for (var j = 0; j < btns.length; j++) btns[j].className = 'sub-btn';
-        }
-      }
-    }
-  }
-  renderSlot(slot);
+function readSurvey(){const survey={};SURVEY_IDS.forEach(id=>survey[id]=$(id).value);return survey}
+
+function writeSurvey(survey={}){const defaults={surveyLocation:'2階',surveyPhase:'再調査',dayCondition:'通常日',residentCount:'',careStaffCount:'',supportStaffCount:'0',absenceStatus:'なし',bathingCount:'0',specialSchedule:'',surveyNote:''};SURVEY_IDS.forEach(id=>{$(id).value=survey[id]??defaults[id]})}
+
+function surveyIssue(d){const s=d.survey||{};if(!(s.surveyLocation||'').trim())return'調査場所を入力してください';if(!s.surveyPhase)return'調査区分を選択してください';if(!s.dayCondition)return'調査日の状態を選択してください';if(s.residentCount===''||Number(s.residentCount)<0)return'利用者数を入力してください';if(s.careStaffCount===''||Number(s.careStaffCount)<0)return'介護職員数を入力してください';if(s.supportStaffCount===''||Number(s.supportStaffCount)<0)return'支援員数を入力してください';if(s.bathingCount===''||Number(s.bathingCount)<0)return'入浴実施人数を入力してください';if(s.dayCondition==='特殊日'&&!(s.specialSchedule||'').trim())return'特殊日の予定・状況を入力してください';return''}
+
+function updateCompleteButton(){const b=$('btnComplete');b.classList.toggle('on',draftCompleted);b.textContent=draftCompleted?'✓ 入力完了済み（解除する）':'✓ 入力完了にする'}
+
+function emptyStore(){return{drafts:{},lastId:null}}
+
+function getStore(){try{const x=JSON.parse(localStorage.getItem(STORE_KEY)||'null');return x&&x.drafts?x:emptyStore()}catch(e){return emptyStore()}}
+
+function setStore(store){localStorage.setItem(STORE_KEY,JSON.stringify(store))}
+
+function newDraftId(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)}
+
+function updateDraftUrl(){try{const url=new URL(location.href);url.searchParams.set('draft',activeDraftId);history.replaceState(null,'',url)}catch(e){}}
+
+function currentDraft(){return{version:3.8,staff:$('staffName').value,job:$('jobType').value,date:$('studyDate').value,shift:curShift,start:$('workStart').value,end:$('workEnd').value,survey:readSurvey(),completed:draftCompleted,recData,updatedAt:new Date().toISOString()}}
+
+function refreshDraftSelect(){
+  const store=getStore(),select=$('draftSelect'),current=activeDraftId;select.innerHTML='';
+  Object.entries(store.drafts).sort((a,b)=>(b[1].updatedAt||'').localeCompare(a[1].updatedAt||'')).forEach(([id,d])=>{const o=document.createElement('option');o.value=id;o.textContent=(d.completed?'【完了】':'【未完】')+(d.staff||'職員記号未設定')+'｜'+(d.date||'日付未設定')+'｜'+(d.job||'職種未設定');select.appendChild(o)});
+  if(current&&store.drafts[current])select.value=current;
 }
 
-// ===== 中分類ボタン操作 =====
-function onSubClick(slot, cat, sub, btnEl) {
-  // 同じボタン再タップ→解除
-  if (recData[slot].sub === sub) {
-    recData[slot].sub = null;
-  } else {
-    recData[slot].sub = sub;
-  }
-  renderSubBtns(slot, cat);
+function duplicateDraftIds(d=currentDraft(),excludeId=activeDraftId){const staff=(d.staff||'').trim().toLocaleLowerCase('ja');if(!staff||!d.date)return[];return Object.entries(getStore().drafts).filter(([id,x])=>id!==excludeId&&(x.staff||'').trim().toLocaleLowerCase('ja')===staff&&x.date===d.date).map(([id])=>id)}
+
+function updateDuplicateWarning(){const duplicate=duplicateDraftIds().length>0;$('duplicateWarning').style.display=duplicate?'block':'none';return duplicate}
+
+function saveDraft(changed=false){
+  try{
+    if(changed)draftCompleted=false;
+    if(!activeDraftId)activeDraftId=newDraftId();
+    const store=getStore();store.drafts[activeDraftId]=currentDraft();store.lastId=activeDraftId;setStore(store);updateDraftUrl();refreshDraftSelect();
+    updateCompleteButton();updateDuplicateWarning();showSaveStatus(changed?'変更を自動保存しました':'自動保存済み');
+  }catch(e){showSaveStatus('自動保存できませんでした');}
 }
 
-// ===== 表示更新 =====
-function renderSlot(slot) {
-  var r = recData[slot];
-  var cats = ['a','b','c'];
-  var onCls = ['on-a','on-b','on-c'];
-  for (var i = 0; i < 3; i++) {
-    var btn = document.getElementById('cat_' + slot + '_' + cats[i]);
-    if (!btn) continue;
-    btn.className = 'cat-btn' + (r.cat === cats[i] ? ' ' + onCls[i] : '');
-
-    var sr = document.getElementById('sub_' + slot + '_' + cats[i]);
-    if (!sr) continue;
-    sr.style.display = (r.cat === cats[i]) ? 'flex' : 'none';
-  }
-  if (r.cat) renderSubBtns(slot, r.cat);
+function migrateLegacyDraft(){
+  try{const store=getStore();if(Object.keys(store.drafts).length)return;const raw=localStorage.getItem(LEGACY_KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||!d.recData)return;const id=newDraftId();store.drafts[id]={...d,version:3.8,completed:false,updatedAt:new Date().toISOString()};store.lastId=id;setStore(store)}catch(e){}
 }
 
-function renderSubBtns(slot, cat) {
-  var r = recData[slot];
-  var sr = document.getElementById('sub_' + slot + '_' + cat);
-  if (!sr) return;
-  var btns = sr.querySelectorAll('.sub-btn');
-  for (var i = 0; i < btns.length; i++) {
-    var sub = btns[i].textContent;
-    btns[i].className = 'sub-btn' + (r.sub === sub ? ' on-' + cat : '');
+function toggleComplete(){
+  if(draftCompleted){draftCompleted=false;saveDraft();showSaveStatus('入力完了を解除しました');return}
+  const d=currentDraft(),issue=draftIssue(d)||surveyIssue(d);if(issue){alert(issue);return}
+  if(duplicateDraftIds(d).length&&!confirm('同じ実施日・職員記号の保存データがあります。重複を確認したうえで入力完了にしますか？'))return;
+  draftCompleted=true;saveDraft();showSaveStatus('入力完了として保存しました');
+}
+
+function loadDraftById(id){
+  try{
+    const store=getStore(),d=store.drafts[id];if(!d||!d.start||!d.end||!d.recData)return false;activeDraftId=id;
+    $('staffName').value=d.staff||'';$('jobType').value=d.job||'介護職員';$('studyDate').value=d.date||$('studyDate').value;
+    curShift=SHIFTS[d.shift]?d.shift:'custom';$('workStart').value=d.start;$('workEnd').value=d.end;writeSurvey(d.survey||{});draftCompleted=!!d.completed;recData=d.recData||{};
+    document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf===curShift));
+    $('shiftNote').textContent='保存済みの基本勤務時間と記録を復元しました。前後1時間枠は任意入力です。';lastSchedule=scheduleSnapshot();buildGrid(true);updateDraftUrl();refreshDraftSelect();updateCompleteButton();updateDuplicateWarning();showSaveStatus('保存データを復元しました');return true;
+  }catch(e){return false;}
+}
+
+function loadDraft(){
+  migrateLegacyDraft();const store=getStore(),requested=new URLSearchParams(location.search).get('draft');
+  const id=requested&&store.drafts[requested]?requested:(store.lastId&&store.drafts[store.lastId]?store.lastId:Object.keys(store.drafts)[0]);
+  return id?loadDraftById(id):false;
+}
+
+function createNewDraft(){
+  const inheritedSurvey=readSurvey();if(activeDraftId)saveDraft();activeDraftId=newDraftId();draftCompleted=false;recData={};$('staffName').value='';$('jobType').value='介護職員';writeSurvey(inheritedSurvey);
+  const now=new Date();$('studyDate').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  curShift='early';$('workStart').value=SHIFTS.early.start;$('workEnd').value=SHIFTS.early.end;document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf==='early'));$('shiftNote').textContent='基本勤務の前後1時間も表示しています。前後枠は任意入力です。';lastSchedule=scheduleSnapshot();buildGrid(false);saveDraft();updateCompleteButton();showSaveStatus('新しい職員データを作成しました');
+}
+
+function switchDraft(id){if(id===activeDraftId)return;saveDraft();loadDraftById(id)}
+
+function clearDraft(){
+  if(!confirm('現在表示している職員データだけを削除しますか？'))return;
+  const store=getStore();delete store.drafts[activeDraftId];const ids=Object.keys(store.drafts);store.lastId=ids[0]||null;setStore(store);activeDraftId=null;
+  if(ids.length)loadDraftById(ids[0]);else createNewDraft();showSaveStatus('職員データを削除しました');
+}
+
+function setShift(id,{force=false}={}){
+  if(!force&&id===curShift&&$('workStart').value===SHIFTS[id].start&&$('workEnd').value===SHIFTS[id].end)return;
+  if(!force&&hasEntries()&&!confirm('勤務形態を変更すると、現在の入力内容を消去します。変更しますか？'))return;
+  recData={};curShift=id;document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('on',b.dataset.sf===id));$('workStart').value=SHIFTS[id].start;$('workEnd').value=SHIFTS[id].end;$('shiftNote').textContent=SHIFTS[id].label+'の基本時間です。前後1時間枠は残業があった場合だけ入力してください。';lastSchedule=scheduleSnapshot();buildGrid(false);saveDraft(true);
+}
+
+function handleTimeChange(){
+  const previous=lastSchedule;
+  if(!validateSchedule(true)){if(previous){$('workStart').value=previous.start;$('workEnd').value=previous.end}return}
+  const next=displayRange(),removesEntered=Object.entries(recData).some(([key,r])=>(Number(key)<next.s||Number(key)>=next.e)&&(r.cat||r.sub||(r.interrupts&&r.interrupts.length)||r.detail||r.interruptDetail));
+  if(removesEntered&&!confirm('短縮する時間帯に入力済みの記録があります。その時間帯を除外しますか？')){if(previous){$('workStart').value=previous.start;$('workEnd').value=previous.end}return}
+  $('shiftNote').textContent='基本勤務 '+$('workStart').value+'〜'+$('workEnd').value+' の前後1時間枠を表示しています。';lastSchedule=scheduleSnapshot();buildGrid(true);saveDraft(true);
+}
+
+function buildGrid(preserve=true){
+  const old=preserve?recData:{};recData={};const base=getRange(),range=displayRange(base),wrap=$('gridWrap');wrap.innerHTML='';
+  if(!range||!validateSchedule(false)){wrap.innerHTML='<p class="notice warn">勤務時間を10分単位で設定してください。</p>';return}
+  const{s,e}=range;let lastHour=-1;
+  for(let m=s;m<e;m+=SLOT_MIN){const key=String(m),saved=old[key]||{},savedInts=Array.isArray(saved.interrupts)?saved.interrupts.filter(x=>x!==saved.sub):[];recData[key]={cat:saved.cat||null,sub:saved.sub||null,detail:saved.detail||'',interrupts:savedInts,interruptDetail:saved.interruptDetail||'',parallelCat:PARALLEL_GROUPS[saved.parallelCat]?saved.parallelCat:'a'};const hour=Math.floor(m/60),division=timeDivision(m);if(hour!==lastHour){lastHour=hour;const hd=document.createElement('div');hd.className='hour-hd';hd.textContent=timeLabel(hour*60)+'台';wrap.appendChild(hd)}const row=document.createElement('div');row.className='it'+(division.workClass==='残業'?' overtime-slot':'');row.id='row_'+key;row.innerHTML='<div class="it-tm">'+timeLabel(m)+(division.workClass==='残業'?'<span class="overtime-tag">残業・任意</span>':'')+'</div><div class="it-in"><div class="cat-row" id="cats_'+key+'"></div><div id="detail_'+key+'"></div></div>';wrap.appendChild(row);renderSlot(key)}
+}
+
+function taskLabel(r){return(r.sub||'')+(r.detail?'（'+r.detail+'）':'')}
+
+function renderSlot(key){
+  const r=recData[key],cats=$('cats_'+key),detail=$('detail_'+key);cats.innerHTML='';
+  Object.entries(CATS).forEach(([k,c])=>{const b=document.createElement('div');b.className='cat-btn'+(r.cat===k?' on-'+k:'');b.textContent=c.label;b.onclick=()=>{const next=r.cat===k?null:k;r.cat=next;r.sub=null;r.detail='';if(k==='d'||!next){r.interrupts=[];r.interruptDetail=''}renderSlot(key);saveDraft(true)};cats.appendChild(b)});
+  detail.innerHTML='';if(!r.cat)return;
+  const sr=document.createElement('div');sr.className='sub-row';
+  CATS[r.cat].subs.forEach(sub=>{const b=document.createElement('div');b.className='sub-btn'+(r.sub===sub?' on-'+r.cat:'');b.textContent=sub;b.onclick=()=>{const next=r.sub===sub?null:sub;if(next!==r.sub)r.detail='';r.sub=next;if(next)r.interrupts=r.interrupts.filter(x=>x!==next);renderSlot(key);saveDraft(true)};sr.appendChild(b)});
+  detail.appendChild(sr);
+  if(r.sub&&r.sub.includes('その他')){const input=document.createElement('input');input.className='detail-input';input.type='text';input.placeholder='具体的な業務（例：家具移動、書類受取り）';input.value=r.detail;input.oninput=()=>{r.detail=input.value;saveDraft(true)};detail.appendChild(input)}
+  if(r.cat!=='d'){
+    const box=document.createElement('div');box.className='interrupt-box';const open=r.interrupts.length>0;box.innerHTML='<div class="int-title">並行・割込業務（主業務と同じ分類・項目から複数選択可）</div>';
+    const groups=document.createElement('div');groups.className='interrupt-row';Object.entries(PARALLEL_GROUPS).forEach(([g,v])=>{const b=document.createElement('div');b.className='int-btn'+(r.parallelCat===g?' on':'');b.textContent=v.label;b.onclick=()=>{r.parallelCat=g;renderSlot(key);saveDraft()};groups.appendChild(b)});box.appendChild(groups);
+    const ir=document.createElement('div');ir.className='interrupt-row';ir.style.marginTop='6px';
+    PARALLEL_GROUPS[r.parallelCat].subs.forEach(x=>{const b=document.createElement('div');b.className='int-btn'+(r.interrupts.includes(x)?' on':'');b.textContent=x;b.onclick=()=>{if(!r.interrupts.includes(x)&&x===r.sub){alert('主業務と同じ業務は、並行・割込業務へ重ねて登録できません。');return}r.interrupts=r.interrupts.includes(x)?r.interrupts.filter(v=>v!==x):[...r.interrupts,x];if(!r.interrupts.some(v=>v.includes('その他')))r.interruptDetail='';renderSlot(key);saveDraft(true)};ir.appendChild(b)});
+    box.appendChild(ir);
+    if(r.interrupts.some(x=>x.includes('その他'))){const input=document.createElement('input');input.className='detail-input';input.type='text';input.placeholder='具体的な並行・割込業務（例：急な来客、宅配受取り）';input.value=r.interruptDetail;input.oninput=()=>{r.interruptDetail=input.value;saveDraft(true)};box.appendChild(input)}
+    if(open){const s=document.createElement('div');s.className='selected-int';s.textContent='選択中：'+r.interrupts.map(x=>x.includes('その他')&&r.interruptDetail?x+'（'+r.interruptDetail+'）':x).join('、');box.appendChild(s)}
+    detail.appendChild(box);
   }
 }
 
-// ===== シフト切替 =====
-function switchShift(sfid) {
-  curShift = sfid;
-  var btns = document.querySelectorAll('.sbtn');
-  for (var i = 0; i < btns.length; i++) {
-    var sf = parseInt(btns[i].getAttribute('data-sf'));
-    btns[i].className = 'sbtn' + (sf === sfid ? ' on' : '');
-  }
-  document.getElementById('shiftNote').textContent = SHIFTS[sfid].note;
-  buildGrid();
+function getStats(){
+  const totals={a:0,b:0,c:0,d:0},subs={},ints={},intDetails=[],overtimeSubs={};
+  let pending=0,overtime=0;
+  Object.entries(recData).forEach(([key,r])=>{
+    const division=timeDivision(Number(key));if(division.workClass==='残業'&&!rowHasInput(r))return;
+    if(!r.cat||!r.sub||(r.sub.includes('その他')&&!r.detail.trim())||(r.interrupts.some(x=>x.includes('その他'))&&!r.interruptDetail.trim())){pending++;return}
+    totals[r.cat]+=SLOT_MIN;
+    const task=taskLabel(r);subs[task]=(subs[task]||0)+SLOT_MIN;
+    if(r.cat!=='d'&&division.workClass==='残業'){overtime+=SLOT_MIN;const overtimeTask=division.overtimeKind+'：'+task;overtimeSubs[overtimeTask]=(overtimeSubs[overtimeTask]||0)+SLOT_MIN}
+    r.interrupts.forEach(x=>{
+      const interrupt=x.includes('その他')&&r.interruptDetail?x+'（'+r.interruptDetail+'）':x;
+      ints[interrupt]=(ints[interrupt]||0)+1;
+      intDetails.push({time:timeLabel(Number(key)),task,interrupt});
+    });
+  });
+  const work=totals.a+totals.b+totals.c;
+  const records=Object.entries(subs).filter(([k])=>k.includes('記録')).reduce((a,[,v])=>a+v,0);
+  const intSlots=new Set(intDetails.map(x=>x.time)).size;
+  return{totals,subs,ints,intDetails,intSlots,pending,work,records,overtime,overtimeSubs};
 }
 
-document.getElementById('shiftBtns').addEventListener('click', function(e) {
-  var btn = e.target;
-  if (btn.getAttribute('data-sf')) {
-    switchShift(parseInt(btn.getAttribute('data-sf')));
-  }
-});
-
-// ===== タブ切替 =====
-function showTab(id) {
-  document.getElementById('pageRec').className = 'page' + (id === 'rec' ? ' on' : '');
-  document.getElementById('pageSum').className = 'page' + (id === 'sum' ? ' on' : '');
-  document.getElementById('tabRec').className = 'tab' + (id === 'rec' ? ' on' : '');
-  document.getElementById('tabSum').className = 'tab' + (id === 'sum' ? ' on' : '');
-  if (id === 'sum') updateSummary();
+function updateSummary(){
+  const st=getStats(),rate=st.work?st.totals.a/st.work*100:0;
+  const survey=readSurvey();
+  $('sumMeta').textContent=[$('studyDate').value,$('staffName').value||'職員記号未設定',$('jobType').value,SHIFTS[curShift].label,$('workStart').value+'〜'+$('workEnd').value,survey.surveyLocation,survey.surveyPhase,survey.dayCondition].filter(Boolean).join('　');
+  $('directRate').textContent=rate.toFixed(1)+'%';
+  $('workMinutes').textContent=st.work+'分';
+  $('recordMinutes').textContent=st.records+'分';
+  $('overtimeMinutes').textContent=st.overtime+'分';
+  $('interruptCount').textContent=st.intSlots+'枠';
+  $('bars').innerHTML=['a','b','c'].map(k=>{const p=st.work?st.totals[k]/st.work*100:0;return'<div class="bar-block"><div class="bar-hd"><span>'+CATS[k].label+'</span><span>'+p.toFixed(1)+'%（'+st.totals[k]+'分）</span></div><div class="bar-bg"><div class="bar-fg" style="width:'+p+'%;background:'+CATS[k].color+'"></div></div></div>'}).join('');
+  const tasks=Object.entries(st.subs).sort((a,b)=>b[1]-a[1]);
+  const overtimeTasks=Object.entries(st.overtimeSubs).sort((a,b)=>b[1]-a[1]);
+  const overtimeHtml=overtimeTasks.length?'<div class="sum-title" style="margin-top:12px">残業中の業務</div>'+overtimeTasks.map(([k,v])=>'<div class="sub-item"><span>'+esc(k)+'</span><span>'+v+'分</span></div>').join(''):'<div class="sum-title" style="margin-top:12px">残業中の業務</div><div class="role-note">残業実働はありません。</div>';
+  const interruptHtml=st.intDetails.length?'<div class="sum-title" style="margin-top:12px">時間帯別の並行・割込業務</div>'+st.intDetails.map(x=>'<div class="sub-item"><span>'+esc(x.time)+'　'+esc(x.interrupt)+'</span><span>主：'+esc(x.task)+'</span></div>').join(''):'';
+  $('subList').innerHTML='<div class="sum-title">業務別時間</div>'+tasks.map(([k,v])=>'<div class="sub-item"><span>'+esc(k)+'</span><span>'+v+'分</span></div>').join('')+overtimeHtml+interruptHtml;
+  $('sumFoot').textContent='休憩 '+st.totals.d+'分（割合の分母から除外）／基本勤務の前後1時間は任意入力で、業務を入力した枠だけ残業実働に含めます。'+(st.pending?'／入力待ち '+st.pending+'コマ：CSV出力前に主業務を確定してください。':'／基本勤務時間の入力が完了しています。');
 }
 
-document.getElementById('tabRec').addEventListener('click', function() { showTab('rec'); });
-document.getElementById('tabSum').addEventListener('click', function() { showTab('sum'); });
-document.getElementById('btnGoSum').addEventListener('click', function() { showTab('sum'); });
-document.getElementById('btnGoRec').addEventListener('click', function() { showTab('rec'); });
+function draftRange(d){return rangeFromTimes(d.start,d.end)}
 
-// ===== 集計 =====
-function updateSummary() {
-  var totals = {a:0, b:0, c:0};
-  var subCounts = {a:{}, b:{}, c:{}};
-  var catKeys = ['a','b','c'];
-  for (var ki = 0; ki < 3; ki++) {
-    var subs = CATS[catKeys[ki]].subs;
-    for (var si = 0; si < subs.length; si++) subCounts[catKeys[ki]][subs[si]] = 0;
-  }
-
-  var total = 0, filled = 0;
-  for (var s in recData) {
-    total++;
-    var r = recData[s];
-    if (!r.cat) continue;
-    filled++;
-    totals[r.cat]++;
-    if (r.sub && subCounts[r.cat][r.sub] !== undefined) subCounts[r.cat][r.sub]++;
-  }
-
-  var pct = function(n, d) { return d > 0 ? Math.round(n / d * 100) : 0; };
-  var pA = pct(totals.a, total);
-  var pB = pct(totals.b, total);
-  var pC = pct(totals.c, total);
-
-  var nm = document.getElementById('staffName').value || '未入力';
-  var jb = document.getElementById('jobType').value;
-  var dt = document.getElementById('studyDate').value || '未設定';
-  document.getElementById('sumMeta').textContent = dt + '　' + nm + '（' + jb + '）　' + SHIFTS[curShift].label;
-
-  document.getElementById('vA').textContent = pA + '%（' + (totals.a * 15) + '分）';
-  document.getElementById('vB').textContent = pB + '%（' + (totals.b * 15) + '分）';
-  document.getElementById('vC').textContent = pC + '%（' + (totals.c * 15) + '分）';
-  document.getElementById('bA').style.width = pA + '%';
-  document.getElementById('bB').style.width = pB + '%';
-  document.getElementById('bC').style.width = pC + '%';
-
-  function makeSubHtml(cat) {
-    var h = '';
-    var subs = CATS[cat].subs;
-    for (var i = 0; i < subs.length; i++) {
-      var cnt = subCounts[cat][subs[i]];
-      if (cnt > 0) {
-        h += '<div class="sub-item"><span>' + subs[i] + '</span><span>' + (cnt * 15) + '分</span></div>';
-      }
-    }
-    return h;
-  }
-  document.getElementById('subA').innerHTML = makeSubHtml('a');
-  document.getElementById('subB').innerHTML = makeSubHtml('b');
-  document.getElementById('subC').innerHTML = makeSubHtml('c');
-
-  var blank = total - filled;
-  document.getElementById('sumFoot').textContent =
-    (blank > 0 ? '⚠️ 未入力：' + blank + 'コマ（' + (blank * 15) + '分）　' : '') +
-    '記録済：' + filled + '/' + total + 'コマ';
+function rowsForDraft(d,withHeader=true){
+  const base=draftRange(d),range=displayRange(base),rows=withHeader?[CSV_HEADER.slice()]:[];if(!range)return rows;
+  const s=d.survey||{};for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{},division=timeDivision(m,d.start,d.end);rows.push([d.date||'',d.staff||'',d.job||'',SHIFTS[d.shift]?.label||'時間勤務',d.start||'',d.end||'',timeLabel(m),SLOT_MIN,r.cat&&CATS[r.cat]?CATS[r.cat].label:'',r.sub||'',r.detail||'',(r.interrupts||[]).join('|'),r.interruptDetail||'',(r.interrupts||[]).length,division.workClass,division.overtimeKind,d.start||'',d.end||'',s.surveyLocation||'',s.surveyPhase||'',s.dayCondition||'',s.residentCount??'',s.careStaffCount??'',s.supportStaffCount??'',s.absenceStatus||'',s.bathingCount??'',s.specialSchedule||'',s.surveyNote||'',d.completed?'完了':'未完了'])}
+  return rows;
 }
 
-// ===== CSV出力 =====
-function doCSV() {
-  var nm = document.getElementById('staffName').value || '未入力';
-  var jb = document.getElementById('jobType').value;
-  var dt = document.getElementById('studyDate').value || '未設定';
-  var sl = SHIFTS[curShift].label;
-  var cfg = SHIFTS[curShift];
+function rowsForCSV(){return rowsForDraft(currentDraft())}
 
-  var rows = [['実施日','職員名','職種','シフト','時刻','直接/間接/非介護','業務内容（中分類）','残業・早出']];
-  for (var s = cfg.dispS; s < cfg.dispE; s++) {
-    var r = recData[s] || {cat:null, sub:null};
-    var ot = (s < cfg.coreS || s >= cfg.coreE) ? '残業・早出' : '通常';
-    var catL = r.cat ? CATS[r.cat].label : '';
-    var subL = r.sub || '';
-    rows.push([dt, nm, jb, sl, slotToTime(s), catL, subL, ot]);
-  }
-
-  var csv = '\uFEFF';
-  for (var ri = 0; ri < rows.length; ri++) {
-    var cols = [];
-    for (var ci = 0; ci < rows[ri].length; ci++) {
-      cols.push('"' + String(rows[ri][ci]).replace(/"/g, '""') + '"');
-    }
-    csv += cols.join(',') + '\r\n';
-  }
-
-  try {
-    var blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'タイムスタディ_' + dt.replace(/-/g, '') + '_' + nm + '.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  } catch(e) {
-    alert('CSV出力エラー：' + e.message);
-  }
+function draftIssue(d){
+  const base=draftRange(d),range=displayRange(base),start=toMin(d.start),end=toMin(d.end);if(!range||start%SLOT_MIN!==0||end%SLOT_MIN!==0)return'勤務時間が10分単位ではありません';
+  if(base.e-base.s>1320)return'基本勤務時間が22時間を超えています';
+  if(!(d.staff||'').trim())return'職員記号が未設定です';
+  let pending=0;for(let m=range.s;m<range.e;m+=SLOT_MIN){const r=(d.recData||{})[String(m)]||{},required=m>=base.s&&m<base.e;if(!required&&!rowHasInput(r))continue;if(!r.cat||!r.sub||(r.sub.includes('その他')&&!(r.detail||'').trim())||((r.interrupts||[]).some(x=>x.includes('その他'))&&!(r.interruptDetail||'').trim()))pending++}
+  return pending?'未確定が'+pending+'コマあります':'';
 }
 
-document.getElementById('btnCSV1').addEventListener('click', doCSV);
-document.getElementById('btnCSV2').addEventListener('click', doCSV);
+function meaningfulDrafts(){return Object.values(getStore().drafts).filter(d=>(d.staff||'').trim()||Object.values(d.recData||{}).some(r=>r.cat||r.sub||(r.interrupts||[]).length))}
 
-// ===== 初期化 =====
-var td = new Date();
-var mm = td.getMonth() + 1;
-var dd = td.getDate();
-document.getElementById('studyDate').value =
-  td.getFullYear() + '-' + (mm < 10 ? '0' + mm : mm) + '-' + (dd < 10 ? '0' + dd : dd);
+function csvText(rows){return '\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n')+'\r\n'}
 
-buildGrid();
+function downloadCSV(rows,filename){const blob=new Blob([csvText(rows)],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+
+function doCSV(){if(!validateSchedule(true))return;const st=getStats();if(!$('staffName').value.trim()){alert('職員イニシャルまたは匿名記号を入力してください。');return}if(st.pending){alert('基本勤務内、または入力を開始した残業枠に、未確定の時間が '+st.pending+' コマあります。主業務と必要な詳細を確定してください。');return}saveDraft();downloadCSV(rowsForCSV(),'タイムスタディ_'+$('studyDate').value.replace(/-/g,'')+'_'+$('staffName').value+'.csv')}
+
+function checkedSavedDrafts(){
+  saveDraft();const all=meaningfulDrafts(),drafts=all.filter(d=>d.completed);if(!all.length){alert('集計できる保存データがありません。');return null}if(!drafts.length){alert('入力完了済みの職員データがありません。各職員で「入力完了にする」を押してください。');return null}
+  const errors=drafts.map(d=>({d,issue:draftIssue(d)||surveyIssue(d)})).filter(x=>x.issue);if(errors.length){alert('完了済みデータに未確定項目があります。\n'+errors.map(x=>(x.d.staff||'職員記号未設定')+'：'+x.issue).join('\n'));return null}
+  const keys={},duplicates=[];drafts.forEach(d=>{const key=d.date+'|'+(d.staff||'').trim().toLocaleLowerCase('ja');if(keys[key])duplicates.push((d.date||'日付未設定')+' '+(d.staff||'職員記号未設定'));else keys[key]=true});if(duplicates.length){alert('同一日・同一職員の完了データが重複しています。重複を解除または削除してください。\n'+[...new Set(duplicates)].join('\n'));return null}
+  const incomplete=all.length-drafts.length;if(incomplete&&!confirm('入力未完了の職員データ '+incomplete+'件を除外し、完了済み '+drafts.length+'件だけで続行しますか？'))return null;
+  return drafts;
+}
+
+function combinedRows(drafts){const rows=[CSV_HEADER.slice()];drafts.forEach(d=>rows.push(...rowsForDraft(d,false)));return rows}
+
+function doCSVAll(){const drafts=checkedSavedDrafts();if(!drafts)return;const dates=[...new Set(drafts.map(d=>d.date).filter(Boolean))];downloadCSV(combinedRows(drafts),'タイムスタディ_全職員_'+(dates.length===1?dates[0].replace(/-/g,''):new Date().toISOString().slice(0,10).replace(/-/g,''))+'.csv')}
+
+function parseCSV(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const ch=text[i],nx=text[i+1];if(q&&ch==='"'&&nx==='"'){cell+='"';i++}else if(ch==='"'){q=!q}else if(!q&&ch===','){row.push(cell);cell=''}else if(!q&&(ch==='\n'||ch==='\r')){if(ch==='\r'&&nx==='\n')i++;row.push(cell);if(row.some(v=>v!==''))rows.push(row);row=[];cell=''}else cell+=ch}if(cell||row.length){row.push(cell);rows.push(row)}return rows}
+
+function rowsToAnalysisData(rows){
+  if(!rows.length)return[];const h=rows[0],idx=n=>h.indexOf(n);if(idx('主業務')<0)return[];
+  return rows.slice(1).map(r=>{const val=n=>idx(n)>=0?r[idx(n)]||'':'',detail=val('主業務詳細'),intDetail=val('割込詳細'),rawInts=val('割込対応').split('|').filter(Boolean),start=val('基本勤務開始')||val('勤務開始'),end=val('基本勤務終了')||val('勤務終了'),inferred=timeDivision(minuteFromLabel(val('時刻')),start,end),rawClass=val('勤務区分')||inferred.workClass,workClass=rawClass==='時間外'?'残業':rawClass,kindIndex=idx('残業区分')>=0?idx('残業区分'):idx('時間外区分'),overtimeKind=kindIndex>=0?r[kindIndex]||inferred.overtimeKind:inferred.overtimeKind;return{date:val('実施日'),staff:val('職員記号'),job:val('職種'),time:val('時刻'),min:Number(val('記録単位（分）'))||10,cat:val('大分類'),task:val('主業務')+(detail?'（'+detail+'）':''),ints:rawInts.map(x=>x.includes('その他')&&intDetail?x+'（'+intDetail+'）':x),workClass,overtimeKind,location:val('調査場所'),phase:val('調査区分'),dayCondition:val('調査日の状態'),residentCount:val('利用者数'),careStaffCount:val('介護職員数'),supportStaffCount:val('支援員数'),absenceStatus:val('欠勤者'),bathingCount:val('入浴実施人数'),specialSchedule:val('特殊予定'),surveyNote:val('調査特記事項')}})
+}
+
+async function analyzeFiles(files){let data=[];for(const f of files)data.push(...rowsToAnalysisData(parseCSV((await f.text()).replace(/^\uFEFF/,''))));renderAll(data)}
+
+function analyzeSaved(){const drafts=checkedSavedDrafts();if(drafts)renderAll(rowsToAnalysisData(combinedRows(drafts)))}
+
+function concentrationRows(rows){
+  const groups={};rows.forEach(x=>{const key=x.date+'|'+x.time;(groups[key]??=[]).push(x)});
+  return Object.entries(groups).map(([key,rs])=>{const counts={};rs.forEach(x=>counts[x.task]=(counts[x.task]||0)+1);const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];return{key,total:rs.length,task:top[0],count:top[1],rate:top[1]/rs.length*100}}).sort((a,b)=>b.rate-a.rate||b.total-a.total);
+}
+
+function focusTable(title,rows){
+  if(!rows.length)return'<div class="sum-title" style="margin-top:12px">'+title+'</div><div class="role-note">対象データがありません。</div>';
+  const focus=concentrationRows(rows);
+  return'<div class="sum-title" style="margin-top:12px">'+title+'</div><div class="table-wrap"><table><thead><tr><th>日付・時刻</th><th>稼働人数</th><th>最多業務</th><th>同時人数</th><th>集中率</th></tr></thead><tbody>'+focus.slice(0,20).map(x=>'<tr><td>'+esc(x.key.replace('|',' '))+'</td><td>'+x.total+'</td><td>'+esc(x.task)+'</td><td>'+x.count+'</td><td>'+x.rate.toFixed(1)+'%</td></tr>').join('')+'</tbody></table></div>';
+}
+
+function renderAll(data){
+  if(!data.length){$('allResult').innerHTML='<p class="notice warn">読み込める新形式のデータがありません。</p>';return}
+  const work=data.filter(x=>x.cat&&x.cat!=='休憩'),careWork=work.filter(x=>x.job==='介護職員'),supportWork=work.filter(x=>x.job==='介護支援員');
+  const direct=careWork.filter(x=>x.cat==='直接介護').reduce((a,x)=>a+x.min,0),workMin=careWork.reduce((a,x)=>a+x.min,0),record=careWork.filter(x=>x.task.includes('記録')).reduce((a,x)=>a+x.min,0);
+  const phaseGroups={};careWork.forEach(x=>{const key=x.phase||'区分未設定',p=phaseGroups[key]??={work:0,direct:0,record:0,overtime:0};p.work+=x.min;if(x.cat==='直接介護')p.direct+=x.min;if(x.task.includes('記録'))p.record+=x.min;if(x.workClass==='残業')p.overtime+=x.min});
+  const overtimeWork=work.filter(x=>x.workClass==='残業'),overtimeMin=overtimeWork.reduce((a,x)=>a+x.min,0),overtimeGroups={};overtimeWork.forEach(x=>{const key=[x.date,x.staff,x.job,x.overtimeKind||'残業',x.task].join('|');overtimeGroups[key]=(overtimeGroups[key]||0)+x.min});
+  const interruptRows=data.flatMap(x=>x.ints.map(i=>({date:x.date,time:x.time,staff:x.staff,job:x.job,task:x.task,interrupt:i}))).sort((a,b)=>(a.date+a.time+a.staff).localeCompare(b.date+b.time+b.staff,'ja'));
+  const interruptSlots=new Set(interruptRows.map(x=>x.date+'|'+x.time+'|'+x.staff)).size;
+  const staff={};work.forEach(x=>{const key=x.date+'|'+x.staff,s=staff[key]??={date:x.date,staff:x.staff,phase:x.phase||'',job:x.job,work:0,direct:0,record:0,overtime:0,intSlots:0};s.work+=x.min;if(x.cat==='直接介護')s.direct+=x.min;if(x.task.includes('記録'))s.record+=x.min;if(x.workClass==='残業')s.overtime+=x.min;if(x.ints.length)s.intSlots++});
+  const phaseTable='<div class="sum-title" style="margin-top:12px">調査区分別の比較</div><div class="table-wrap"><table><thead><tr><th>調査区分</th><th>介護職実働</th><th>直接介護</th><th>直接介護率</th><th>記録</th><th>残業</th></tr></thead><tbody>'+Object.entries(phaseGroups).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+v.work+'分</td><td>'+v.direct+'分</td><td>'+(v.work?v.direct/v.work*100:0).toFixed(1)+'%</td><td>'+v.record+'分</td><td>'+v.overtime+'分</td></tr>').join('')+'</tbody></table></div>';
+  const conditionMap={};data.forEach(x=>{if(!x.date||!x.location)return;const key=[x.date,x.location,x.phase,x.dayCondition].join('|');conditionMap[key]??=x});const conditionRows=Object.values(conditionMap);const conditionTable='<div class="sum-title" style="margin-top:12px">調査条件</div>'+(conditionRows.length?'<div class="table-wrap"><table><thead><tr><th>日付</th><th>場所</th><th>区分</th><th>状態</th><th>利用者</th><th>介護職</th><th>支援員</th><th>欠勤</th><th>入浴</th><th>特殊予定・特記事項</th></tr></thead><tbody>'+conditionRows.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.location)+'</td><td>'+esc(x.phase)+'</td><td>'+esc(x.dayCondition)+'</td><td>'+esc(x.residentCount)+'</td><td>'+esc(x.careStaffCount)+'</td><td>'+esc(x.supportStaffCount)+'</td><td>'+esc(x.absenceStatus)+'</td><td>'+esc(x.bathingCount)+'</td><td>'+esc([x.specialSchedule,x.surveyNote].filter(Boolean).join('／'))+'</td></tr>').join('')+'</tbody></table></div>':'<div class="role-note">旧形式CSVには調査条件が含まれていません。</div>');
+  const overtimeTable='<div class="sum-title" style="margin-top:12px">残業中に行った業務</div>'+(Object.keys(overtimeGroups).length?'<div class="table-wrap"><table><thead><tr><th>日付</th><th>職員</th><th>職種</th><th>区分</th><th>業務</th><th>時間</th></tr></thead><tbody>'+Object.entries(overtimeGroups).sort((a,b)=>a[0].localeCompare(b[0],'ja')).map(([key,min])=>{const [date,staffName,job,kind,task]=key.split('|');return'<tr><td>'+esc(date)+'</td><td>'+esc(staffName)+'</td><td>'+esc(job)+'</td><td>'+esc(kind)+'</td><td>'+esc(task)+'</td><td>'+min+'分</td></tr>'}).join('')+'</tbody></table></div>':'<div class="role-note">残業実働はありません。</div>');
+  const interruptTable='<div class="sum-title" style="margin-top:12px">時間帯別の並行・割込業務</div>'+(interruptRows.length?'<div class="table-wrap"><table><thead><tr><th>日付・時刻</th><th>職員</th><th>職種</th><th>主業務</th><th>並行・割込業務</th></tr></thead><tbody>'+interruptRows.map(x=>'<tr><td>'+esc(x.date+' '+x.time)+'</td><td>'+esc(x.staff)+'</td><td>'+esc(x.job)+'</td><td>'+esc(x.task)+'</td><td>'+esc(x.interrupt)+'</td></tr>').join('')+'</tbody></table></div>':'<div class="role-note">並行・割込業務は記録されていません。</div>');
+  const staffTable='<div class="sum-title" style="margin-top:12px">職員別の構成</div><div class="table-wrap"><table><thead><tr><th>日付</th><th>職員記号</th><th>調査区分</th><th>職種</th><th>実働</th><th>残業</th><th>直接介護</th><th>直接介護率</th><th>記録</th><th>並行・割込枠</th></tr></thead><tbody>'+Object.values(staff).sort((a,b)=>b.work-a.work).map(v=>'<tr><td>'+esc(v.date)+'</td><td>'+esc(v.staff)+'</td><td>'+esc(v.phase)+'</td><td>'+esc(v.job)+'</td><td>'+v.work+'分</td><td>'+v.overtime+'分</td><td>'+v.direct+'分</td><td>'+(v.work?v.direct/v.work*100:0).toFixed(1)+'%</td><td>'+v.record+'分</td><td>'+v.intSlots+'枠</td></tr>').join('')+'</tbody></table></div>';
+  $('allResult').innerHTML='<div class="metric-grid"><div class="metric"><b>'+(workMin?direct/workMin*100:0).toFixed(1)+'%</b><span>介護職員の実質直接介護率</span></div><div class="metric"><b>'+workMin+'分</b><span>介護職員の休憩除外実働</span></div><div class="metric"><b>'+record+'分</b><span>介護職員の記録業務</span></div><div class="metric"><b>'+overtimeMin+'分</b><span>全職員の残業実働</span></div><div class="metric"><b>'+interruptSlots+'枠</b><span>並行・割込があった時間枠</span></div></div>'+conditionTable+phaseTable+focusTable('介護職員の時間帯別業務集中',careWork)+focusTable('介護支援員の時間帯別業務集中',supportWork)+overtimeTable+interruptTable+staffTable+'<div class="sum-foot">全体集計は入力完了済みの職員データだけを対象とします。実質直接介護率には実際に業務を行った残業時間も含め、休憩と勤務外は除外しています。</div>';
+}
+
+function showTab(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===id));$('page'+id[0].toUpperCase()+id.slice(1)).classList.add('on');if(id==='sum')updateSummary()}
+$('shiftBtns').onclick=e=>{if(e.target.dataset.sf)setShift(e.target.dataset.sf)};
+$('workStart').onchange=handleTimeChange;$('workEnd').onchange=handleTimeChange;
+$('staffName').oninput=()=>saveDraft(true);$('jobType').onchange=()=>saveDraft(true);$('studyDate').onchange=()=>saveDraft(true);SURVEY_IDS.forEach(id=>{$(id).addEventListener(id==='surveyNote'||$(id).tagName==='INPUT'?'input':'change',()=>saveDraft(true))});$('btnComplete').onclick=toggleComplete;$('btnClear').onclick=clearDraft;$('draftSelect').onchange=e=>switchDraft(e.target.value);$('btnNewDraft').onclick=createNewDraft;
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showTab(t.dataset.tab));$('btnGoSum').onclick=()=>showTab('sum');$('btnGoRec').onclick=()=>showTab('rec');$('btnCSV1').onclick=doCSV;$('btnCSV2').onclick=doCSV;$('csvFiles').onchange=e=>analyzeFiles([...e.target.files]);
+$('btnAnalyzeSaved').onclick=analyzeSaved;$('btnCSVAll').onclick=doCSVAll;
+window.addEventListener('beforeunload',saveDraft);
+window.addEventListener('storage',e=>{if(e.key===STORE_KEY)refreshDraftSelect()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDraftSelect()});
+const now=new Date();$('studyDate').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+if(!loadDraft())createNewDraft();
 </script>
 </body>
 </html>
